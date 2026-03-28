@@ -3,408 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Episode Randomizer | IQIYI Edition</title>
-    <!-- Google Fonts -->
+    <title>Conan Randomizer | iQIYI 1200+</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --conan-blue: #0a192f;
-            --conan-gold: #c5a059;
-            --conan-red: #8b0000;
-            --glass: rgba(255, 255, 255, 0.1);
+            --conan-blue: #020b18;
+            --conan-gold: #d4af37;
+            --conan-red: #b22222;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
         body {
             margin: 0;
-            padding: 0;
             font-family: 'Kanit', sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            background: #050505;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(20, 40, 80, 0.5) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(60, 20, 20, 0.3) 0%, transparent 40%);
             color: white;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
             min-height: 100vh;
         }
 
         .container {
-            max-width: 800px;
-            width: 90%;
-            text-align: center;
+            width: 100%;
+            max-width: 600px;
             padding: 40px 20px;
+            text-align: center;
+        }
+
+        .premium-card {
+            background: var(--glass);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            padding: 40px 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
         }
 
         h1 {
+            font-weight: 600;
             color: var(--conan-gold);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 10px rgba(197, 160, 89, 0.3);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
 
-        .subtitle {
-            font-weight: 300;
-            opacity: 0.8;
-            margin-bottom: 40px;
-        }
-
-        /* Wheel UI Section */
-        .wheel-box {
-            background: var(--glass);
-            border: 1px solid var(--conan-gold);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-            transition: transform 0.3s ease;
-        }
-
-        .result-display {
-            font-size: 2.5rem;
+        .ep-display {
+            font-size: 3.5rem;
             font-weight: 600;
+            margin: 30px 0;
             color: #fff;
-            margin: 20px 0;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 2px solid var(--conan-gold);
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+            min-height: 90px;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: linear-gradient(45deg, var(--conan-gold), #edd197);
-            border: none;
-            padding: 12px 25px;
-            color: var(--conan-blue);
-            font-weight: 600;
+        .info-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--conan-gold);
             border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--conan-gold);
+            margin-bottom: 20px;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 15px;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: 0.3s;
+            margin-bottom: 15px;
             font-family: 'Kanit';
-            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%);
+            color: #000;
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #8b0000 0%, #e31e24 100%);
+            color: #fff;
         }
 
         button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(197, 160, 89, 0.6);
+            transform: translateY(-2px);
+            filter: brightness(1.1);
         }
 
-        button:active {
-            transform: scale(0.95);
+        .season-selector {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
         }
 
-        .movie-btn {
-            background: linear-gradient(45deg, var(--conan-red), #ff4d4d);
-            color: white;
-            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
+        select {
+            background: #111;
+            color: var(--conan-gold);
+            border: 1px solid var(--conan-gold);
+            padding: 8px;
+            border-radius: 8px;
+            width: 80%;
+            font-family: 'Kanit';
         }
 
-        .movie-btn:hover {
-            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.6);
-        }
-
-        /* Animation */
         .spinning {
-            animation: pulse 0.1s infinite;
+            animation: flash 0.1s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
+        @keyframes flash {
+            0% { opacity: 0.5; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>CONAN CASE RANDOMIZER</h1>
-    <p class="subtitle">"ความจริงมีเพียงหนึ่งเดียวเท่านั้น!"</p>
+    <h1>DETECTIVE CONAN</h1>
+    <p style="opacity: 0.6; margin-bottom: 30px;">iQIYI Random Database (Update 2025)</p>
 
-    <!-- วงล้อที่ 1: สุ่มซีซั่น / มูฟวี่ -->
-    <div class="wheel-box">
-        <h3>สุ่มซีซั่น หรือ เดอะมูฟวี่</h3>
-        <div id="result1" class="result-display">- คลิกเพื่อเริ่มสืบ -</div>
-        <div class="btn-group">
-            <button onclick="randomSeries()">สุ่มซีซั่น (1-24)</button>
-            <button class="movie-btn" onclick="randomMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+    <div class="premium-card">
+        <div id="badge" class="info-badge">พร้อมสืบหาความจริง</div>
+        <div id="mainDisplay" class="ep-display">EP. ???</div>
+        
+        <button class="btn-main btn-gold" onclick="randomSeries()">สุ่มตอน (Series 1-24)</button>
+        <button class="btn-main btn-red" onclick="randomMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+
+        <div class="season-selector">
+            <p style="font-size: 0.9rem; margin-bottom: 10px;">เลือกเฉพาะซีซั่นที่ต้องการสุ่มตอน</p>
+            <select id="seasonPick">
+                <!-- JS will populate options -->
+            </select>
+            <button onclick="randomFromSpecificSeason()" style="margin-top:10px; background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:5px 15px; border-radius:5px;">สุ่มในซีซั่นนี้</button>
         </div>
     </div>
 
-    <!-- วงล้อที่ 2: สุ่มตอนในซีซั่น -->
-    <div class="wheel-box">
-        <h3>สุ่มเลขตอน (อิงตามจำนวนตอน iQIYI)</h3>
-        <div id="result2" class="result-display">- เลือกซีซั่นก่อน -</div>
-        <div class="btn-group" style="margin-bottom: 20px;">
-            <input type="number" id="seasonInput" placeholder="ใส่เลขซีซั่น (1-24)" 
-                   style="padding: 10px; border-radius: 10px; border: 1px solid var(--conan-gold); width: 150px; text-align: center;">
-        </div>
-        <button onclick="randomEpisode()">สุ่มเลขตอน!</button>
-    </div>
-
-    <p style="font-size: 0.8rem; opacity: 0.5;">*ข้อมูลจำนวนตอนอ้างอิงตามมาตรฐาน iQIYI Thailand*</p>
+    <p style="font-size: 0.8rem; opacity: 0.4;">Data Reference: iQIYI Thailand 2025 (Continuous Ep. 1-12XX)</p>
 </div>
 
 <script>
-    // ข้อมูลจำนวนตอนโดยประมาณของ iQIYI (Update ตามระบบซีซั่นไทย)
-    // หมายเหตุ: iQIYI มักแบ่งตอนตามปี/ซีซั่น ซึ่งจำนวนตอนจะไม่เท่ากัน
-    const seasonData = {
-        1: 44, 2: 44, 3: 44, 4: 44, 5: 44, 6: 44, 7: 44, 8: 44, 9: 44, 10: 44,
-        11: 44, 12: 44, 13: 44, 14: 44, 15: 44, 16: 44, 17: 44, 18: 44, 19: 52, 
-        20: 52, 21: 52, 22: 52, 23: 52, 24: 52
-    };
+    // ข้อมูลช่วงตอนแบบรันยาว (อ้างอิง iQIYI โดยประมาณ)
+    // เฉลี่ยปีละ 44-52 ตอน จนถึงตอนที่ 1200+ ในปัจจุบัน
+    const totalSeasons = 24;
+    const epPerSeason = 50; // ค่าเฉลี่ยโดยประมาณเพื่อให้เลขตอนรวมถึง 1200 ในซีซั่น 24
+
+    // สร้างข้อมูลช่วงตอนในแต่ละซีซั่น
+    const seasonRanges = [];
+    let currentStart = 1;
+    for (let i = 1; i <= totalSeasons; i++) {
+        let count = (i <= 18) ? 44 : 52; // ซีซั่นเก่ามักมี 44 ตอน ซีซั่นใหม่ๆ มี 52 ตอน
+        let end = currentStart + count - 1;
+        seasonRanges.push({ season: i, start: currentStart, end: end });
+        currentStart = end + 1;
+    }
+
+    // Populate Select Dropdown
+    const select = document.getElementById('seasonPick');
+    seasonRanges.forEach(r => {
+        let opt = document.createElement('option');
+        opt.value = r.season;
+        opt.text = `ซีซั่น ${r.season} (ตอนที่ ${r.start}-${r.end})`;
+        select.appendChild(opt);
+    });
 
     function randomSeries() {
-        const res = document.getElementById('result1');
-        res.classList.add('spinning');
+        startEffect();
         setTimeout(() => {
-            const season = Math.floor(Math.random() * 24) + 1;
-            res.innerHTML = `ซีซั่นที่ ${season}`;
-            res.classList.remove('spinning');
-            document.getElementById('seasonInput').value = season;
-        }, 500);
+            const allMax = seasonRanges[totalSeasons-1].end;
+            const randEp = Math.floor(Math.random() * allMax) + 1;
+            const findS = seasonRanges.find(r => randEp >= r.start && randEp <= r.end);
+            
+            updateDisplay(`EP. ${randEp}`, `ซีซั่น ${findS.season}`);
+            stopEffect();
+        }, 600);
+    }
+
+    function randomFromSpecificSeason() {
+        const sVal = document.getElementById('seasonPick').value;
+        const range = seasonRanges.find(r => r.season == sVal);
+        startEffect();
+        setTimeout(() => {
+            const randEp = Math.floor(Math.random() * (range.end - range.start + 1)) + range.start;
+            updateDisplay(`EP. ${randEp}`, `สุ่มจากซีซั่น ${sVal}`);
+            stopEffect();
+        }, 600);
     }
 
     function randomMovie() {
-        const res = document.getElementById('result1');
-        res.classList.add('spinning');
+        startEffect();
         setTimeout(() => {
             const movie = Math.floor(Math.random() * 28) + 1;
-            res.innerHTML = `เดอะมูฟวี่ ${movie}`;
-            res.classList.remove('spinning');
-        }, 500);
+            updateDisplay(`Movie ${movie}`, "เดอะมูฟวี่");
+            stopEffect();
+        }, 600);
     }
 
-    function randomEpisode() {
-        const seasonIdx = document.getElementById('seasonInput').value;
-        const res = document.getElementById('result2');
-        
-        if (!seasonIdx || seasonIdx < 1 || seasonIdx > 24) {
-            alert("ใส่เลขซีซั่น 1-24 ก่อนนะจ๊ะวัยรุ่น!");
-            return;
-        }
+    function startEffect() {
+        document.getElementById('mainDisplay').classList.add('spinning');
+    }
 
-        res.classList.add('spinning');
-        setTimeout(() => {
-            const maxEp = seasonData[seasonIdx] || 50; // ถ้าหาไม่เจอให้ default 50
-            const episode = Math.floor(Math.random() * maxEp) + 1;
-            res.innerHTML = `ตอนที่ ${episode}`;
-            res.classList.remove('spinning');
-        }, 500);
+    function stopEffect() {
+        document.getElementById('mainDisplay').classList.remove('spinning');
+    }
+
+    function updateDisplay(main, badge) {
+        document.getElementById('mainDisplay').innerText = main;
+        document.getElementById('badge').innerText = badge;
     }
 </script>
 
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Episode Randomizer | IQIYI Edition</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --conan-blue: #0a192f;
-            --conan-gold: #c5a059;
-            --conan-red: #8b0000;
-            --glass: rgba(255, 255, 255, 0.1);
-        }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Kanit', sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 90%;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        h1 {
-            color: var(--conan-gold);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 10px rgba(197, 160, 89, 0.3);
-        }
-
-        .subtitle {
-            font-weight: 300;
-            opacity: 0.8;
-            margin-bottom: 40px;
-        }
-
-        /* Wheel UI Section */
-        .wheel-box {
-            background: var(--glass);
-            border: 1px solid var(--conan-gold);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-            transition: transform 0.3s ease;
-        }
-
-        .result-display {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: #fff;
-            margin: 20px 0;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 2px solid var(--conan-gold);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        button {
-            background: linear-gradient(45deg, var(--conan-gold), #edd197);
-            border: none;
-            padding: 12px 25px;
-            color: var(--conan-blue);
-            font-weight: 600;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Kanit';
-            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(197, 160, 89, 0.6);
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        .movie-btn {
-            background: linear-gradient(45deg, var(--conan-red), #ff4d4d);
-            color: white;
-            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
-        }
-
-        .movie-btn:hover {
-            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.6);
-        }
-
-        /* Animation */
-        .spinning {
-            animation: pulse 0.1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>CONAN CASE RANDOMIZER</h1>
-    <p class="subtitle">"ความจริงมีเพียงหนึ่งเดียวเท่านั้น!"</p>
-
-    <!-- วงล้อที่ 1: สุ่มซีซั่น / มูฟวี่ -->
-    <div class="wheel-box">
-        <h3>สุ่มซีซั่น หรือ เดอะมูฟวี่</h3>
-        <div id="result1" class="result-display">- คลิกเพื่อเริ่มสืบ -</div>
-        <div class="btn-group">
-            <button onclick="randomSeries()">สุ่มซีซั่น (1-24)</button>
-            <button class="movie-btn" onclick="randomMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
-        </div>
-    </div>
-
-    <!-- วงล้อที่ 2: สุ่มตอนในซีซั่น -->
-    <div class="wheel-box">
-        <h3>สุ่มเลขตอน (อิงตามจำนวนตอน iQIYI)</h3>
-        <div id="result2" class="result-display">- เลือกซีซั่นก่อน -</div>
-        <div class="btn-group" style="margin-bottom: 20px;">
-            <input type="number" id="seasonInput" placeholder="ใส่เลขซีซั่น (1-24)" 
-                   style="padding: 10px; border-radius: 10px; border: 1px solid var(--conan-gold); width: 150px; text-align: center;">
-        </div>
-        <button onclick="randomEpisode()">สุ่มเลขตอน!</button>
-    </div>
-
-    <p style="font-size: 0.8rem; opacity: 0.5;">*ข้อมูลจำนวนตอนอ้างอิงตามมาตรฐาน iQIYI Thailand*</p>
-</div>
-
-<script>
-    // ข้อมูลจำนวนตอนโดยประมาณของ iQIYI (Update ตามระบบซีซั่นไทย)
-    // หมายเหตุ: iQIYI มักแบ่งตอนตามปี/ซีซั่น ซึ่งจำนวนตอนจะไม่เท่ากัน
-    const seasonData = {
-        1: 44, 2: 44, 3: 44, 4: 44, 5: 44, 6: 44, 7: 44, 8: 44, 9: 44, 10: 44,
-        11: 44, 12: 44, 13: 44, 14: 44, 15: 44, 16: 44, 17: 44, 18: 44, 19: 52, 
-        20: 52, 21: 52, 22: 52, 23: 52, 24: 52
-    };
-
-    function randomSeries() {
-        const res = document.getElementById('result1');
-        res.classList.add('spinning');
-        setTimeout(() => {
-            const season = Math.floor(Math.random() * 24) + 1;
-            res.innerHTML = `ซีซั่นที่ ${season}`;
-            res.classList.remove('spinning');
-            document.getElementById('seasonInput').value = season;
-        }, 500);
-    }
-
-    function randomMovie() {
-        const res = document.getElementById('result1');
-        res.classList.add('spinning');
-        setTimeout(() => {
-            const movie = Math.floor(Math.random() * 28) + 1;
-            res.innerHTML = `เดอะมูฟวี่ ${movie}`;
-            res.classList.remove('spinning');
-        }, 500);
-    }
-
-    function randomEpisode() {
-        const seasonIdx = document.getElementById('seasonInput').value;
-        const res = document.getElementById('result2');
-        
-        if (!seasonIdx || seasonIdx < 1 || seasonIdx > 24) {
-            alert("ใส่เลขซีซั่น 1-24 ก่อนนะจ๊ะวัยรุ่น!");
-            return;
-        }
-
-        res.classList.add('spinning');
-        setTimeout(() => {
-            const maxEp = seasonData[seasonIdx] || 50; // ถ้าหาไม่เจอให้ default 50
-            const episode = Math.floor(Math.random() * maxEp) + 1;
-            res.innerHTML = `ตอนที่ ${episode}`;
-            res.classList.remove('spinning');
-        }, 500);
-    }
-</script>
-
-</body>
-</html>
