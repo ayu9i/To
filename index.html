@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Randomizer | TrueID Edition</title>
+    <title>Conan Randomizer | Mystery Door Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -48,6 +48,7 @@
             padding: 30px 20px;
             backdrop-filter: blur(15px);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
         }
 
         .result-container {
@@ -86,16 +87,6 @@
 
         .ep-display.show { opacity: 1; transform: translateY(0); }
 
-        .update-alert {
-            font-size: 0.8rem;
-            color: #00ffcc;
-            background: rgba(0, 255, 204, 0.1);
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-
         .btn-main {
             width: 100%;
             padding: 16px;
@@ -105,13 +96,13 @@
             border: none;
             cursor: pointer;
             transition: 0.3s;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-family: 'Kanit';
         }
 
         .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); color: #000; }
-        .btn-true { background: linear-gradient(135deg, #ff0000 0%, #b20000 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-        .btn-red { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-true { background: linear-gradient(135deg, #ff0000 0%, #b20000 100%); color: #fff; }
+        .btn-dark { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
 
         /* Door System */
         .door-container {
@@ -139,7 +130,23 @@
 
         .keyhole { width: 40px; height: 60px; background: #d4af37 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="15" fill="%23000"/><path d="M40 50 L60 50 L70 90 L30 90 Z" fill="%23000"/></svg>') no-repeat center; border-radius: 5px; margin: 20px; }
 
-        .label { font-size: 0.75rem; color: #888; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; display: block; }
+        .label { font-size: 0.75rem; color: #888; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; display: block; text-align: left; padding-left: 5px; }
+
+        .season-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        select {
+            background: #111; color: var(--conan-gold);
+            border: 1px solid var(--conan-gold);
+            padding: 10px; border-radius: 8px;
+            width: 100%; font-family: 'Kanit';
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -150,14 +157,13 @@
 </div>
 
 <div class="container">
-    <h1 style="color:white; margin-bottom: 0;">DETECTIVE CONAN</h1>
-    <p style="color:var(--conan-gold); margin-top: 5px; letter-spacing: 1px;">RANDOMIZER HUB</p>
+    <h1 style="color:white; margin-bottom: 0; letter-spacing: 2px;">DETECTIVE CONAN</h1>
+    <p style="color:var(--conan-gold); margin-top: 5px; opacity: 0.8;">RANDOMIZER HUB</p>
 
     <div class="premium-card">
         <div id="badge" class="info-badge">สืบหาความจริง</div>
         <div class="result-container">
             <h2 id="epDisplay" class="ep-display">???</h2>
-            <div id="updateMsg" class="update-alert">เสาร์นี้ 21:00 น. พบกับ EP.11!</div>
         </div>
         
         <span class="label">TrueVisions Exclusive</span>
@@ -167,22 +173,41 @@
         <button class="btn-main btn-gold" onclick="spinArchive()">สุ่มตอน iQIYI ทั้งหมด</button>
 
         <span class="label">Special Contents</span>
-        <button class="btn-main btn-red" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+        <button class="btn-main btn-dark" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+
+        <div class="season-box">
+            <span class="label" style="margin-top: 0;">สุ่มเฉพาะซีซั่น (iQIYI)</span>
+            <select id="seasonPick"></select>
+            <button onclick="spinSpecific()" style="background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:8px 15px; border-radius:8px; font-family:'Kanit'; width: 100%;">สุ่มในซีซั่นที่เลือก</button>
+        </div>
     </div>
 
-    <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 25px;">อ้างอิงข้อมูลล่าสุด: ตุลาคม 2025</p>
+    <p style="font-size: 0.7rem; opacity: 0.4; margin-top: 25px;">อัปเดตล่าสุด: EP.11 ซีซั่น 25 มาวันเสาร์นี้!</p>
 </div>
 
 <script>
-    // Config: ซีซั่น 25 TrueID (นับ 1, 2, 3...)
-    const currentTrueEps = 10; // ปัจจุบันมี 10 ตอน
+    // Logic ข้อมูลซีซั่น 1-24
+    const totalSeasons = 24;
+    const seasonRanges = [];
+    let currentStart = 1;
+    for (let i = 1; i <= totalSeasons; i++) {
+        let count = (i <= 18) ? 44 : 52;
+        let end = currentStart + count - 1;
+        seasonRanges.push({ season: i, start: currentStart, end: end });
+        currentStart = end + 1;
+    }
 
-    // Config: ซีซั่น 1-24 iQIYI (นับต่อเนื่อง)
-    const iqiyiMaxEp = 1200; 
+    // ใส่ข้อมูลใน Select
+    const select = document.getElementById('seasonPick');
+    seasonRanges.forEach(r => {
+        let opt = document.createElement('option');
+        opt.value = r.season;
+        opt.text = `ซีซั่น ${r.season} (ตอนที่ ${r.start}-${r.end})`;
+        select.appendChild(opt);
+    });
 
     const epDisplay = document.getElementById('epDisplay');
     const badge = document.getElementById('badge');
-    const updateMsg = document.getElementById('updateMsg');
     const doors = document.getElementById('doorSystem');
 
     function startConanSpin(randomFn) {
@@ -192,7 +217,6 @@
         setTimeout(() => {
             epDisplay.classList.remove('show');
             badge.classList.remove('show');
-            updateMsg.style.display = 'none';
             randomFn(); 
         }, 600);
 
@@ -207,20 +231,23 @@
         }, 1800);
     }
 
-    // สุ่มซีซั่น 25 แบบ TrueID (1-10)
     const spinSeason25Fn = () => {
-        const rand = Math.floor(Math.random() * currentTrueEps) + 1;
+        const rand = Math.floor(Math.random() * 10) + 1;
         updateUI(`EP. ${rand}`, `TrueVisions ซีซั่น 25`);
-        updateMsg.style.display = 'block'; // โชว์ข้อความอัปเดตตอนที่ 11
     };
 
-    // สุ่ม Archive iQIYI (1-1200)
     const spinArchiveFn = () => {
-        const rand = Math.floor(Math.random() * iqiyiMaxEp) + 1;
+        const rand = Math.floor(Math.random() * seasonRanges[totalSeasons-1].end) + 1;
         updateUI(`EP. ${rand}`, `iQIYI Continuous Series`);
     };
 
-    // สุ่ม Movie
+    const spinSpecificFn = () => {
+        const sVal = select.value;
+        const range = seasonRanges.find(r => r.season == sVal);
+        const rand = Math.floor(Math.random() * (range.end - range.start + 1)) + range.start;
+        updateUI(`EP. ${rand}`, `ซีซั่นที่ ${sVal}`);
+    };
+
     const spinMovieFn = () => {
         const rand = Math.floor(Math.random() * 28) + 1;
         updateUI(`MOVIE ${rand}`, `Detective Conan Movie`);
@@ -233,8 +260,10 @@
 
     function spinSeason25() { startConanSpin(spinSeason25Fn); }
     function spinArchive() { startConanSpin(spinArchiveFn); }
+    function spinSpecific() { startConanSpin(spinSpecificFn); }
     function spinMovie() { startConanSpin(spinMovieFn); }
 </script>
 
 </body>
 </html>
+
