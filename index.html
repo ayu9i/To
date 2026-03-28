@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Randomizer | The Door Edition</title>
+    <title>Conan Randomizer | The Mystery Door</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -14,6 +14,7 @@
             --glass: rgba(255, 255, 255, 0.05);
         }
 
+        /* แก้ไขบัคเลื่อนไม่ได้: ใช้ overflow-x แทน และเอา height 100vh ออกจาก body หลัก */
         body {
             margin: 0;
             font-family: 'Kanit', sans-serif;
@@ -24,9 +25,15 @@
             color: white;
             display: flex;
             justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            overflow: hidden; /* Prevent scrollbar during animation */
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        /* คลาสสำหรับล็อคหน้าจอชั่วคราวตอนสุ่ม */
+        .stop-scrolling {
+            height: 100vh;
+            overflow: hidden;
         }
 
         .container {
@@ -35,7 +42,7 @@
             padding: 40px 20px;
             text-align: center;
             position: relative;
-            z-index: 10; /* Above doors */
+            z-index: 10;
         }
 
         .premium-card {
@@ -45,7 +52,7 @@
             padding: 40px 20px;
             backdrop-filter: blur(15px);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
+            margin-top: 20px;
         }
 
         h1 {
@@ -56,13 +63,14 @@
             text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
 
-        /* Result Display Area */
         .result-container {
             position: relative;
-            margin: 30px 0;
-            min-height: 110px;
-            overflow: hidden;
-            border-radius: 10px;
+            margin: 20px 0;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .info-badge {
@@ -73,44 +81,38 @@
             border-radius: 50px;
             font-size: 0.9rem;
             color: var(--conan-gold);
-            margin-bottom: 20px;
-            opacity: 0; /* Hidden by default */
-            transition: opacity 0.3s ease-out;
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .info-badge.show {
-            opacity: 1;
-        }
+        .info-badge.show { opacity: 1; }
 
         .ep-display {
             font-size: 3.5rem;
             font-weight: 600;
             margin: 0;
             color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-            position: relative;
-            top: -100px; /* Pre-animation position (hidden) */
-            transition: top 0.5s ease-out 0.2s; /* Reveal animation delay */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
         }
 
         .ep-display.show {
-            top: 0;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .movie-title {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #ccc;
             margin-top: 10px;
-            display: block;
             opacity: 0;
-            transition: opacity 0.3s ease-out 0.5s;
+            transition: opacity 0.5s;
         }
 
-        .movie-title.show {
-            opacity: 1;
-        }
+        .movie-title.show { opacity: 1; }
 
-        /* Common Buttons */
         .btn-main {
             width: 100%;
             padding: 18px;
@@ -122,91 +124,54 @@
             transition: 0.3s;
             margin-bottom: 15px;
             font-family: 'Kanit';
-            position: relative;
         }
 
-        .btn-gold {
-            background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%);
-            color: #000;
-        }
+        .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); color: #000; }
+        .btn-red { background: linear-gradient(135deg, #8b0000 0%, #e31e24 100%); color: #fff; }
 
-        .btn-red {
-            background: linear-gradient(135deg, #8b0000 0%, #e31e24 100%);
-            color: #fff;
-        }
+        button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
-        }
-
-        button:active:not(:disabled) {
-            transform: scale(0.98);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Door Animation System */
+        /* Door System */
         .door-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Let clicks pass through */
-            z-index: 20; /* Above everything */
-            overflow: hidden;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
             display: flex;
         }
 
         .door {
             position: absolute;
-            width: 50%;
-            height: 100%;
+            width: 50%; height: 100%;
             background-color: var(--conan-black);
-            transition: transform 0.8s ease-in-out;
-            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            display: flex;
+            align-items: center;
         }
 
         .door-left {
-            left: -50%; /* Closed by default to cover */
+            left: -50%;
             border-right: 2px solid var(--conan-gold);
-            display: flex;
             justify-content: flex-end;
-            align-items: center;
         }
 
         .door-right {
-            right: -50%; /* Closed by default to cover */
+            right: -50%;
             border-left: 2px solid var(--conan-gold);
-            display: flex;
             justify-content: flex-start;
-            align-items: center;
         }
 
-        /* Door closing animation */
-        .door-container.active .door-left {
-            transform: translateX(100%);
-        }
+        .door-container.active .door-left { transform: translateX(100%); }
+        .door-container.active .door-right { transform: translateX(-100%); }
 
-        .door-container.active .door-right {
-            transform: translateX(-100%);
-        }
-
-        /* Keyhole detail (for extra Conan feel) */
         .keyhole {
-            width: 40px;
-            height: 60px;
+            width: 40px; height: 60px;
             background: #d4af37 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="15" fill="%23000"/><path d="M40 50 L60 50 L70 90 L30 90 Z" fill="%23000"/></svg>') no-repeat center;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            border-radius: 5px;
+            margin: 20px;
         }
-
-        .door-left .keyhole { margin-right: 20px; }
-        .door-right .keyhole { margin-left: 20px; }
 
         .season-selector {
             background: rgba(255,255,255,0.05);
@@ -217,55 +182,45 @@
         }
 
         select {
-            background: #111;
-            color: var(--conan-gold);
+            background: #111; color: var(--conan-gold);
             border: 1px solid var(--conan-gold);
-            padding: 8px;
-            border-radius: 8px;
-            width: 80%;
-            font-family: 'Kanit';
-            margin-bottom: 10px;
+            padding: 10px; border-radius: 8px;
+            width: 90%; font-family: 'Kanit';
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
 
 <div class="door-container" id="doorSystem">
-    <div class="door door-left">
-        <div class="keyhole"></div>
-    </div>
-    <div class="door door-right">
-        <div class="keyhole"></div>
-    </div>
+    <div class="door door-left"><div class="keyhole"></div></div>
+    <div class="door door-right"><div class="keyhole"></div></div>
 </div>
 
 <div class="container">
     <h1>DETECTIVE CONAN</h1>
-    <p style="opacity: 0.6; margin-bottom: 30px;">iQIYI Continuous Database (1200+ Eps)</p>
+    <p style="opacity: 0.6; margin-bottom: 20px;">iQIYI Continuous Database (1200+ Eps)</p>
 
     <div class="premium-card">
         <div id="badge" class="info-badge">สืบหาความจริง</div>
         <div class="result-container">
             <h2 id="epDisplay" class="ep-display">???</h2>
-            <span id="movieTitle" class="movie-title"></span>
+            <div id="movieTitle" class="movie-title"></div>
         </div>
         
-        <button id="btnSeries" class="btn-main btn-gold" onclick="spinSeries()">สุ่มตอน (Series 1-24)</button>
-        <button id="btnMovie" class="btn-main btn-red" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+        <button class="btn-main btn-gold" onclick="spinSeries()">สุ่มตอนทั้งหมด (1-24)</button>
+        <button class="btn-main btn-red" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
 
         <div class="season-selector">
-            <p style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">เลือกสุ่มเฉพาะซีซั่น</p>
-            <select id="seasonPick">
-                </select>
-            <button onclick="spinFromSpecificSeason()" style="background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:8px 20px; border-radius:8px; font-family:'Kanit';">สุ่มภายในซีซั่นนี้</button>
+            <p style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">สุ่มเฉพาะซีซั่น</p>
+            <select id="seasonPick"></select>
+            <button onclick="spinFromSpecificSeason()" style="background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:8px 20px; border-radius:8px; font-family:'Kanit';">สุ่มในซีซั่นนี้</button>
         </div>
     </div>
-
-    <p style="font-size: 0.8rem; opacity: 0.4;">Data Reference: iQIYI Thailand 2025 (Continuous)</p>
+    <p style="font-size: 0.7rem; opacity: 0.4; margin-top: 20px;">ความจริงมีเพียงหนึ่งเดียวเท่านั้น!</p>
 </div>
 
 <script>
-    // iQIYI Data structure
     const totalSeasons = 24;
     const seasonRanges = [];
     let currentStart = 1;
@@ -276,7 +231,6 @@
         currentStart = end + 1;
     }
 
-    // Populate Dropdown
     const select = document.getElementById('seasonPick');
     seasonRanges.forEach(r => {
         let opt = document.createElement('option');
@@ -285,101 +239,69 @@
         select.appendChild(opt);
     });
 
-    // Optional: Sound Effect URLs (ใส่ลิงก์ .mp3 ได้เลย)
-    // const doorCloseSound = new Audio('path/to/close.mp3');
-    // const doorOpenSound = new Audio('path/to/open.mp3');
-
-    // UI Elements
     const epDisplay = document.getElementById('epDisplay');
     const badge = document.getElementById('badge');
     const movieTitle = document.getElementById('movieTitle');
     const doors = document.getElementById('doorSystem');
-    const buttons = document.querySelectorAll('.btn-main, button');
 
-    function hideResult() {
-        epDisplay.classList.remove('show');
-        badge.classList.remove('show');
-        movieTitle.classList.remove('show');
-        movieTitle.innerText = ''; // Clear movie text
-    }
-
-    function showResult(mainText, badgeText, movieText = '') {
-        epDisplay.innerText = mainText;
-        badge.innerText = badgeText;
-        if(movieText) movieTitle.innerText = movieText;
-        
-        epDisplay.classList.add('show');
-        badge.classList.add('show');
-        if(movieText) movieTitle.classList.add('show');
-    }
-
-    function disableButtons(status) {
-        buttons.forEach(b => b.disabled = status);
-    }
-
-    // Conan Door Spin Logic
     function startConanSpin(randomFn) {
-        disableButtons(true);
-        hideResult(); // Hidden before doors close
-
-        // 1. Close Doors
+        // ล็อคการเลื่อนหน้าจอ
+        document.body.classList.add('stop-scrolling');
+        
+        // ปิดประตู
         doors.classList.add('active');
-        // doorCloseSound.play(); // Uncomment if sound is added
-
-        // 2. Perform Randomization (while doors are closed)
+        
+        // เคลียร์ค่าเก่าก่อนเปิดประตูใหม่
         setTimeout(() => {
-            randomFn(); // Generate new data
-        }, 800); // Wait for doors to close completely
+            epDisplay.classList.remove('show');
+            badge.classList.remove('show');
+            movieTitle.classList.remove('show');
+            randomFn(); 
+        }, 600);
 
-        // 3. Open Doors and Reveal
+        // เปิดประตู
         setTimeout(() => {
             doors.classList.remove('active');
-            // doorOpenSound.play(); // Uncomment if sound is added
-        }, 1500); // Stay closed for a short moment
+            // ปลดล็อคหน้าจอ
+            document.body.classList.remove('stop-scrolling');
+        }, 1400);
 
-        // 4. Re-enable Buttons
+        // โชว์ผลลัพธ์
         setTimeout(() => {
-            disableButtons(false);
-        }, 2200); // Fully done
+            epDisplay.classList.add('show');
+            badge.classList.add('show');
+            if(movieTitle.innerText !== "") movieTitle.classList.add('show');
+        }, 1800);
     }
 
-    // Random Functions (passed to startConanSpin)
     const seriesRandomFn = () => {
         const allMax = seasonRanges[totalSeasons-1].end;
         const randEp = Math.floor(Math.random() * allMax) + 1;
         const findS = seasonRanges.find(r => randEp >= r.start && randEp <= r.end);
-        showResult(`EP. ${randEp}`, `ซีซั่นที่ ${findS.season}`);
+        updateUI(`EP. ${randEp}`, `ซีซั่นที่ ${findS.season}`, "");
     };
 
     const specificSeasonRandomFn = () => {
-        const sVal = document.getElementById('seasonPick').value;
+        const sVal = select.value;
         const range = seasonRanges.find(r => r.season == sVal);
         const randEp = Math.floor(Math.random() * (range.end - range.start + 1)) + range.start;
-        showResult(`EP. ${randEp}`, `สุ่มจากซีซั่นที่ ${sVal}`);
+        updateUI(`EP. ${randEp}`, `สุ่มจากซีซั่นที่ ${sVal}`, "");
     };
 
     const movieRandomFn = () => {
         const movie = Math.floor(Math.random() * 28) + 1;
-        // Mock movie titles (optional, can be empty or added manually)
-        const titles = [
-            "The Time-Bombed Skyscraper", "The Fourteenth Target", "The Last Wizard of the Century", 
-            "Captured in Her Eyes", "Countdown to Heaven", "The Phantom of Baker Street",
-            "Crossroad in the Ancient Capital", "Magician of the Silver Sky", "Strategy Above the Depths",
-            "The Private Eyes' Requiem", "Jolly Roger in the Deep Azure", "Full Score of Fear",
-            "The Raven Chaser", "The Lost Ship in the Sky", "Quarter of Silence",
-            "The Eleventh Striker", "Private Eye in the Distant Sea", "Dimensional Sniper",
-            "Sunflowers of Inferno", "The Darkest Nightmare", "The Crimson Love Letter",
-            "Zero the Enforcer", "The Fist of Blue Sapphire", "The Scarlet Bullet",
-            "The Bride of Halloween", "Black Iron Submarine", "The Million-dollar Pentagram", "เดอะมูฟวี่ล่าสุด (2025)"
-        ];
-        showResult(`MOVIE ${movie}`, `เดอะมูฟวี่`, titles[movie-1] || "");
+        updateUI(`MOVIE ${movie}`, `เดอะมูฟวี่`, "ไขคดีปริศนาเดอะมูฟวี่");
     };
 
-    // Button Click Functions
+    function updateUI(main, bText, mText) {
+        epDisplay.innerText = main;
+        badge.innerText = bText;
+        movieTitle.innerText = mText;
+    }
+
     function spinSeries() { startConanSpin(seriesRandomFn); }
     function spinFromSpecificSeason() { startConanSpin(specificSeasonRandomFn); }
     function spinMovie() { startConanSpin(movieRandomFn); }
-
 </script>
 
 </body>
