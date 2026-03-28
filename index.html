@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Ultimate Randomizer</title>
+    <title>Conan Ultimate Randomizer | Complete Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --conan-gold: #d4af37;
             --conan-black: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.07);
         }
 
         body {
@@ -42,12 +42,12 @@
             border-radius: 24px;
             padding: 30px 20px;
             backdrop-filter: blur(15px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
 
         .result-container {
             margin: 20px 0;
-            min-height: 160px;
+            min-height: 180px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -70,17 +70,17 @@
         .info-badge.show { opacity: 1; }
 
         .ep-display {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             margin: 0;
             color: #fff;
             opacity: 0;
-            line-height: 1.4;
+            line-height: 1.3;
             transform: translateY(20px);
             transition: all 0.5s ease-out;
         }
 
-        .ep-display span { color: var(--conan-gold); }
+        .ep-display span { color: var(--conan-gold); font-size: 1.2rem; display: block; margin-top: 8px; font-weight: 300; }
         .ep-display.show { opacity: 1; transform: translateY(0); }
 
         .btn-main {
@@ -97,6 +97,7 @@
         }
 
         .btn-all { background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); color: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+        .btn-red { background: linear-gradient(135deg, #e31e24 0%, #8b0000 100%); color: #fff; }
         .btn-dark { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
 
         .door-container {
@@ -160,14 +161,15 @@
             <h2 id="epDisplay" class="ep-display">???</h2>
         </div>
         
-        <span class="label">Main Series (Season 1-25)</span>
-        <button class="btn-main btn-all" onclick="spinAll()">สุ่มตอนทั้งหมด (รวมซีซั่น 25)</button>
+        <span class="label">Total Randomizer</span>
+        <button class="btn-main btn-all" onclick="spinEverything()">สุ่มทุกอย่าง (Series/Movie/Special)</button>
         
-        <span class="label">Special Contents</span>
-        <button class="btn-main btn-dark" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+        <span class="label">Special Action</span>
+        <button class="btn-main btn-red" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+        <button class="btn-main btn-dark" onclick="spinLupin()">สุ่มโคนัน ปะทะ ลูแปง</button>
 
         <div class="season-box">
-            <span class="label" style="margin-top: 0;">เลือกสุ่มเฉพาะซีซั่น</span>
+            <span class="label" style="margin-top: 0;">เลือกสุ่มเฉพาะซีซั่น (1-25)</span>
             <select id="seasonPick"></select>
             <button onclick="spinSpecific()" style="background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:8px 15px; border-radius:8px; font-family:'Kanit'; width: 100%;">สุ่มในซีซั่นที่เลือก</button>
         </div>
@@ -175,7 +177,21 @@
 </div>
 
 <script>
-    const season25Max = 11; // อัปเดตล่าสุด
+    const movieNames = [
+        "คดีปริศนาระเบิดระฟ้า", "คดีฆาตกรรมไพ่ปริศนา", "พ่อมดคนสุดท้ายแห่งศตวรรษ", "คดีฆาตกรรมนัยน์ตาปริศนา", "คดีปริศนาเส้นตายสู่สวรรค์",
+        "ปริศนาบนถนนสายมรณะ", "คดีฆาตกรรมแห่งเมืองปริศนา", "มนตราแห่งรัตติกาลสีเงิน", "ยุทธการเหนือห้วงทะเลลึก", "บทเพลงมรณะแด่เหล่ายอดนักสืบ",
+        "ปริศนามหาขุมทรัพย์โจรสลัด", "บทเพลงแห่งความตาย", "ปริศนานักล่าทรชนทมิฬ", "ปริศนามรณะเหนือน่านฟ้า", "Pre-Quarter 15 นาทีเฉียดตาย",
+        "ภาคระทึกขวัญเรือรบมรณะ", "ภาคปริศนาทานตะวันมรณะ", "ปริศนารัตติกาลทมิฬ", "ปริศนาเพลงกลอนซ่อนรัก", "ปฏิบัติการสายลับเดอะซีโร่",
+        "ศึกชิงอัญมณีสีคราม", "กระสุนสีเพลิง", "เจ้าสาวฮาโลวีน", "มฤตยูใต้น้ำทมิฬ", "ดาวห้าแฉกแห่งร้อยล้าน", "ศึกชิงเพชรกลางท้องฟ้า (Coming Soon)",
+        "คดีฆาตกรรมปริศนาโรงละคร (Special)", "คดีปริศนากุหลาบดำ (Special)"
+    ];
+
+    const lupinEps = [
+        { name: "Lupin III vs. Detective Conan (2009)", type: "TV Special" },
+        { name: "Lupin III vs. Detective Conan (2013)", type: "The Movie" }
+    ];
+
+    const season25Max = 11;
     const totalSeasons = 24;
     const seasonRanges = [];
     let currentStart = 1;
@@ -186,7 +202,6 @@
         currentStart = end + 1;
     }
 
-    // เติม Dropdown
     const select = document.getElementById('seasonPick');
     seasonRanges.forEach(r => {
         let opt = document.createElement('option');
@@ -194,10 +209,8 @@
         opt.text = `ซีซั่น ${r.season} (ตอนที่ ${r.start}-${r.end})`;
         select.appendChild(opt);
     });
-    // เพิ่มซีซั่น 25 ใน Dropdown ด้วย
     let opt25 = document.createElement('option');
-    opt25.value = 25;
-    opt25.text = `ซีซั่น 25 (ตอนที่ 1-${season25Max})`;
+    opt25.value = 25; opt25.text = `ซีซั่น 25 (ตอนที่ 1-${season25Max})`;
     select.appendChild(opt25);
 
     const epDisplay = document.getElementById('epDisplay');
@@ -222,22 +235,39 @@
         }, 1800);
     }
 
-    // ปุ่มสุ่มรวม 1-25
-    function spinAll() {
+    function spinEverything() {
         startSpin(() => {
-            const iqiyiMax = seasonRanges[totalSeasons-1].end;
-            const totalItems = iqiyiMax + season25Max;
-            const rand = Math.floor(Math.random() * totalItems) + 1;
-
-            if (rand <= iqiyiMax) {
-                // อยู่ใน 1-24
-                const found = seasonRanges.find(r => rand >= r.start && rand <= r.end);
-                updateUI(`ซีซั่น ${found.season} <span>ตอนที่ ${rand}</span>`, `iQIYI Database`);
-            } else {
-                // อยู่ใน 25
-                const local25 = rand - iqiyiMax;
-                updateUI(`ซีซั่น 25 <span>ตอนที่ ${local25}</span>`, `TrueVisions Exclusive`);
+            const chance = Math.random();
+            if (chance < 0.7) { // 70% ออกซีรีส์
+                const iqiyiMax = seasonRanges[totalSeasons-1].end;
+                const rand = Math.floor(Math.random() * (iqiyiMax + season25Max)) + 1;
+                if (rand <= iqiyiMax) {
+                    const found = seasonRanges.find(r => rand >= r.start && rand <= r.end);
+                    updateUI(`ซีซั่น ${found.season} <span>ตอนที่ ${rand}</span>`, `เดอะซีรีส์ (iQIYI)`);
+                } else {
+                    updateUI(`ซีซั่น 25 <span>ตอนที่ ${rand - iqiyiMax}</span>`, `เดอะซีรีส์ (TrueID)`);
+                }
+            } else if (chance < 0.95) { // 25% ออกมูฟวี่
+                const randM = Math.floor(Math.random() * movieNames.length);
+                updateUI(`Movie ${randM + 1} <span>${movieNames[randM]}</span>`, `เดอะมูฟวี่`);
+            } else { // 5% ออกลูแปง
+                const randL = Math.floor(Math.random() * lupinEps.length);
+                updateUI(`${lupinEps[randL].name}`, `คดีพิเศษ: ปะทะลูแปง`);
             }
+        });
+    }
+
+    function spinMovie() {
+        startSpin(() => {
+            const rand = Math.floor(Math.random() * movieNames.length);
+            updateUI(`Movie ${rand + 1} <span>${movieNames[rand]}</span>`, `เดอะมูฟวี่`);
+        });
+    }
+
+    function spinLupin() {
+        startSpin(() => {
+            const rand = Math.floor(Math.random() * lupinEps.length);
+            updateUI(`${lupinEps[rand].name}`, `คดีพิเศษ: ปะทะลูแปง`);
         });
     }
 
@@ -246,19 +276,12 @@
             const sVal = parseInt(select.value);
             if (sVal === 25) {
                 const rand = Math.floor(Math.random() * season25Max) + 1;
-                updateUI(`ซีซั่น 25 <span>ตอนที่ ${rand}</span>`, `TrueVisions Exclusive`);
+                updateUI(`ซีซั่น 25 <span>ตอนที่ ${rand}</span>`, `สุ่มเฉพาะซีซั่น`);
             } else {
                 const range = seasonRanges.find(r => r.season == sVal);
                 const rand = Math.floor(Math.random() * (range.end - range.start + 1)) + range.start;
-                updateUI(`ซีซั่น ${sVal} <span>ตอนที่ ${rand}</span>`, `iQIYI Specific`);
+                updateUI(`ซีซั่น ${sVal} <span>ตอนที่ ${rand}</span>`, `สุ่มเฉพาะซีซั่น`);
             }
-        });
-    }
-
-    function spinMovie() {
-        startSpin(() => {
-            const rand = Math.floor(Math.random() * 28) + 1;
-            updateUI(`Movie <span>ตอนที่ ${rand}</span>`, `Detective Conan Movie`);
         });
     }
 
