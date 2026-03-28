@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Randomizer | The Mystery Door</title>
+    <title>Conan Randomizer | TrueID Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --conan-blue: #020b18;
             --conan-gold: #d4af37;
-            --conan-red: #b22222;
+            --conan-red: #e31e24;
+            --true-red: #ff0000;
             --conan-black: #050505;
             --glass: rgba(255, 255, 255, 0.05);
         }
 
-        /* แก้ไขบัคเลื่อนไม่ได้: ใช้ overflow-x แทน และเอา height 100vh ออกจาก body หลัก */
         body {
             margin: 0;
             font-family: 'Kanit', sans-serif;
@@ -30,15 +30,11 @@
             padding-bottom: 50px;
         }
 
-        /* คลาสสำหรับล็อคหน้าจอชั่วคราวตอนสุ่ม */
-        .stop-scrolling {
-            height: 100vh;
-            overflow: hidden;
-        }
+        .stop-scrolling { height: 100vh; overflow: hidden; }
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             padding: 40px 20px;
             text-align: center;
             position: relative;
@@ -49,24 +45,14 @@
             background: var(--glass);
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 24px;
-            padding: 40px 20px;
+            padding: 30px 20px;
             backdrop-filter: blur(15px);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            margin-top: 20px;
-        }
-
-        h1 {
-            font-weight: 600;
-            color: var(--conan-gold);
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
         }
 
         .result-container {
-            position: relative;
             margin: 20px 0;
-            min-height: 120px;
+            min-height: 150px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -79,7 +65,7 @@
             background: rgba(212, 175, 55, 0.1);
             border: 1px solid var(--conan-gold);
             border-radius: 50px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--conan-gold);
             margin-bottom: 10px;
             opacity: 0;
@@ -98,27 +84,24 @@
             transition: all 0.5s ease-out;
         }
 
-        .ep-display.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .ep-display.show { opacity: 1; transform: translateY(0); }
 
-        .movie-title {
-            font-size: 1.2rem;
-            color: #ccc;
+        .update-alert {
+            font-size: 0.8rem;
+            color: #00ffcc;
+            background: rgba(0, 255, 204, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
             margin-top: 10px;
-            opacity: 0;
-            transition: opacity 0.5s;
+            display: none;
         }
-
-        .movie-title.show { opacity: 1; }
 
         .btn-main {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             font-size: 1.1rem;
             font-weight: 600;
-            border-radius: 15px;
+            border-radius: 12px;
             border: none;
             cursor: pointer;
             transition: 0.3s;
@@ -127,10 +110,8 @@
         }
 
         .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); color: #000; }
-        .btn-red { background: linear-gradient(135deg, #8b0000 0%, #e31e24 100%); color: #fff; }
-
-        button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-true { background: linear-gradient(135deg, #ff0000 0%, #b20000 100%); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-red { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
 
         /* Door System */
         .door-container {
@@ -151,43 +132,14 @@
             align-items: center;
         }
 
-        .door-left {
-            left: -50%;
-            border-right: 2px solid var(--conan-gold);
-            justify-content: flex-end;
-        }
-
-        .door-right {
-            right: -50%;
-            border-left: 2px solid var(--conan-gold);
-            justify-content: flex-start;
-        }
-
+        .door-left { left: -50%; border-right: 2px solid var(--conan-gold); justify-content: flex-end; }
+        .door-right { right: -50%; border-left: 2px solid var(--conan-gold); justify-content: flex-start; }
         .door-container.active .door-left { transform: translateX(100%); }
         .door-container.active .door-right { transform: translateX(-100%); }
 
-        .keyhole {
-            width: 40px; height: 60px;
-            background: #d4af37 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="15" fill="%23000"/><path d="M40 50 L60 50 L70 90 L30 90 Z" fill="%23000"/></svg>') no-repeat center;
-            border-radius: 5px;
-            margin: 20px;
-        }
+        .keyhole { width: 40px; height: 60px; background: #d4af37 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="15" fill="%23000"/><path d="M40 50 L60 50 L70 90 L30 90 Z" fill="%23000"/></svg>') no-repeat center; border-radius: 5px; margin: 20px; }
 
-        .season-selector {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-
-        select {
-            background: #111; color: var(--conan-gold);
-            border: 1px solid var(--conan-gold);
-            padding: 10px; border-radius: 8px;
-            width: 90%; font-family: 'Kanit';
-            margin-bottom: 15px;
-        }
+        .label { font-size: 0.75rem; color: #888; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -198,112 +150,91 @@
 </div>
 
 <div class="container">
-    <h1>DETECTIVE CONAN</h1>
-    <p style="opacity: 0.6; margin-bottom: 20px;">iQIYI Continuous Database (1200+ Eps)</p>
+    <h1 style="color:white; margin-bottom: 0;">DETECTIVE CONAN</h1>
+    <p style="color:var(--conan-gold); margin-top: 5px; letter-spacing: 1px;">RANDOMIZER HUB</p>
 
     <div class="premium-card">
         <div id="badge" class="info-badge">สืบหาความจริง</div>
         <div class="result-container">
             <h2 id="epDisplay" class="ep-display">???</h2>
-            <div id="movieTitle" class="movie-title"></div>
+            <div id="updateMsg" class="update-alert">เสาร์นี้ 21:00 น. พบกับ EP.11!</div>
         </div>
         
-        <button class="btn-main btn-gold" onclick="spinSeries()">สุ่มตอนทั้งหมด (1-24)</button>
-        <button class="btn-main btn-red" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
+        <span class="label">TrueVisions Exclusive</span>
+        <button class="btn-main btn-true" onclick="spinSeason25()">สุ่มซีซั่น 25 (TrueID)</button>
+        
+        <span class="label">iQIYI Archive (1-1200+)</span>
+        <button class="btn-main btn-gold" onclick="spinArchive()">สุ่มตอน iQIYI ทั้งหมด</button>
 
-        <div class="season-selector">
-            <p style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.8;">สุ่มเฉพาะซีซั่น</p>
-            <select id="seasonPick"></select>
-            <button onclick="spinFromSpecificSeason()" style="background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:8px 20px; border-radius:8px; font-family:'Kanit';">สุ่มในซีซั่นนี้</button>
-        </div>
+        <span class="label">Special Contents</span>
+        <button class="btn-main btn-red" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
     </div>
-    <p style="font-size: 0.7rem; opacity: 0.4; margin-top: 20px;">ความจริงมีเพียงหนึ่งเดียวเท่านั้น!</p>
+
+    <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 25px;">อ้างอิงข้อมูลล่าสุด: ตุลาคม 2025</p>
 </div>
 
 <script>
-    const totalSeasons = 24;
-    const seasonRanges = [];
-    let currentStart = 1;
-    for (let i = 1; i <= totalSeasons; i++) {
-        let count = (i <= 18) ? 44 : 52;
-        let end = currentStart + count - 1;
-        seasonRanges.push({ season: i, start: currentStart, end: end });
-        currentStart = end + 1;
-    }
+    // Config: ซีซั่น 25 TrueID (นับ 1, 2, 3...)
+    const currentTrueEps = 10; // ปัจจุบันมี 10 ตอน
 
-    const select = document.getElementById('seasonPick');
-    seasonRanges.forEach(r => {
-        let opt = document.createElement('option');
-        opt.value = r.season;
-        opt.text = `ซีซั่น ${r.season} (ตอนที่ ${r.start}-${r.end})`;
-        select.appendChild(opt);
-    });
+    // Config: ซีซั่น 1-24 iQIYI (นับต่อเนื่อง)
+    const iqiyiMaxEp = 1200; 
 
     const epDisplay = document.getElementById('epDisplay');
     const badge = document.getElementById('badge');
-    const movieTitle = document.getElementById('movieTitle');
+    const updateMsg = document.getElementById('updateMsg');
     const doors = document.getElementById('doorSystem');
 
     function startConanSpin(randomFn) {
-        // ล็อคการเลื่อนหน้าจอ
         document.body.classList.add('stop-scrolling');
-        
-        // ปิดประตู
         doors.classList.add('active');
         
-        // เคลียร์ค่าเก่าก่อนเปิดประตูใหม่
         setTimeout(() => {
             epDisplay.classList.remove('show');
             badge.classList.remove('show');
-            movieTitle.classList.remove('show');
+            updateMsg.style.display = 'none';
             randomFn(); 
         }, 600);
 
-        // เปิดประตู
         setTimeout(() => {
             doors.classList.remove('active');
-            // ปลดล็อคหน้าจอ
             document.body.classList.remove('stop-scrolling');
         }, 1400);
 
-        // โชว์ผลลัพธ์
         setTimeout(() => {
             epDisplay.classList.add('show');
             badge.classList.add('show');
-            if(movieTitle.innerText !== "") movieTitle.classList.add('show');
         }, 1800);
     }
 
-    const seriesRandomFn = () => {
-        const allMax = seasonRanges[totalSeasons-1].end;
-        const randEp = Math.floor(Math.random() * allMax) + 1;
-        const findS = seasonRanges.find(r => randEp >= r.start && randEp <= r.end);
-        updateUI(`EP. ${randEp}`, `ซีซั่นที่ ${findS.season}`, "");
+    // สุ่มซีซั่น 25 แบบ TrueID (1-10)
+    const spinSeason25Fn = () => {
+        const rand = Math.floor(Math.random() * currentTrueEps) + 1;
+        updateUI(`EP. ${rand}`, `TrueVisions ซีซั่น 25`);
+        updateMsg.style.display = 'block'; // โชว์ข้อความอัปเดตตอนที่ 11
     };
 
-    const specificSeasonRandomFn = () => {
-        const sVal = select.value;
-        const range = seasonRanges.find(r => r.season == sVal);
-        const randEp = Math.floor(Math.random() * (range.end - range.start + 1)) + range.start;
-        updateUI(`EP. ${randEp}`, `สุ่มจากซีซั่นที่ ${sVal}`, "");
+    // สุ่ม Archive iQIYI (1-1200)
+    const spinArchiveFn = () => {
+        const rand = Math.floor(Math.random() * iqiyiMaxEp) + 1;
+        updateUI(`EP. ${rand}`, `iQIYI Continuous Series`);
     };
 
-    const movieRandomFn = () => {
-        const movie = Math.floor(Math.random() * 28) + 1;
-        updateUI(`MOVIE ${movie}`, `เดอะมูฟวี่`, "ไขคดีปริศนาเดอะมูฟวี่");
+    // สุ่ม Movie
+    const spinMovieFn = () => {
+        const rand = Math.floor(Math.random() * 28) + 1;
+        updateUI(`MOVIE ${rand}`, `Detective Conan Movie`);
     };
 
-    function updateUI(main, bText, mText) {
+    function updateUI(main, bText) {
         epDisplay.innerText = main;
         badge.innerText = bText;
-        movieTitle.innerText = mText;
     }
 
-    function spinSeries() { startConanSpin(seriesRandomFn); }
-    function spinFromSpecificSeason() { startConanSpin(specificSeasonRandomFn); }
-    function spinMovie() { startConanSpin(movieRandomFn); }
+    function spinSeason25() { startConanSpin(spinSeason25Fn); }
+    function spinArchive() { startConanSpin(spinArchiveFn); }
+    function spinMovie() { startConanSpin(spinMovieFn); }
 </script>
 
 </body>
 </html>
-
