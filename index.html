@@ -7,7 +7,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --conan-gold: #d4af37; --glass: rgba(255, 255, 255, 0.08); --danger: #ff4d4d; }
-        body { margin: 0; font-family: 'Kanit', sans-serif; background: #000; color: white; display: flex; justify-content: center; min-height: 100vh; padding-bottom: 50px; overflow-x: hidden; }
+        body { margin: 0; font-family: 'Kanit', sans-serif; background: #000; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 50px; overflow-x: hidden; }
+        
+        /* เพิ่มสไตล์แถบแจ้งเตือน */
+        .alert-banner {
+            width: 100%;
+            background: linear-gradient(90deg, #000, #b8860b, #000);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 0.8rem;
+            text-align: center;
+            border-bottom: 1px solid var(--conan-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .alert-banner b { color: #fff; text-shadow: 0 0 5px var(--conan-gold); }
+        .alert-banner span { display: block; font-size: 0.7rem; opacity: 0.9; }
+
         #updateModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: #111; border: 2px solid var(--conan-gold); border-radius: 20px; padding: 25px; max-width: 400px; width: 85%; text-align: center; }
         .update-list { text-align: left; font-size: 0.8rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin: 15px 0; line-height: 1.5; }
@@ -37,6 +54,12 @@
     </style>
 </head>
 <body>
+
+<!-- แถบแจ้งเตือนใหม่ -->
+<div class="alert-banner">
+    <b>📢 ซีซั่น 25 ตอนที่ 12 อัปเดตเสาร์นี้ 21:00 น.!</b>
+    <span>🎬 Movie 29 รอบสื่อ 17-20 เม.ย. | ฉายจริงทุกโรง 30 เม.ย. นี้</span>
+</div>
 
 <div id="updateModal">
     <div class="modal-content">
@@ -96,7 +119,6 @@
         setTimeout(() => { document.getElementById('epDisplay').classList.add('show'); document.getElementById('badge').classList.add('show'); }, 1500);
     }
 
-    // ฟังก์ชันเช็คว่าตอนซ้ำในประวัติไหม
     function isDuplicate(text) {
         return history.some(h => h.text.includes(text));
     }
@@ -127,7 +149,7 @@
                     badge = "ตอนพิเศษ";
                 }
                 retry++;
-                if(retry > 50) break; // กัน Infinite Loop ถ้าประวัติเต็ม
+                if(retry > 50) break;
             } while (isDuplicate(result));
 
             updateUI(result.includes(':') ? `Movie ${result.split(': ')[0].split(' ')[1]} <span>${result.split(': ')[1]}</span>` : result, badge);
@@ -188,3 +210,4 @@
 </script>
 </body>
 </html>
+
