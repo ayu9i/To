@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conan Hub | Anti-Repeat V3.4</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --conan-gold: #d4af37; --glass: rgba(255, 255, 255, 0.08); --danger: #ff4d4d; }
+        :root { --conan-gold: #d4af37; --glass: rgba(255, 255, 255, 0.08); --danger: #ff4d4d; --premium-grad: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); }
         body { margin: 0; font-family: 'Kanit', sans-serif; background: #000; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 50px; overflow-x: hidden; }
         
-        /* เพิ่มสไตล์แถบแจ้งเตือน */
+        /* แถบแจ้งเตือน */
         .alert-banner {
             width: 100%;
             background: linear-gradient(90deg, #000, #b8860b, #000);
@@ -25,11 +25,31 @@
         .alert-banner b { color: #fff; text-shadow: 0 0 5px var(--conan-gold); }
         .alert-banner span { display: block; font-size: 0.7rem; opacity: 0.9; }
 
+        /* ส่วนประกาศอัปเดตครั้งใหญ่ที่เพิ่มมาใหม่ */
+        .mega-update-box {
+            width: 90%;
+            max-width: 470px;
+            margin-top: 15px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px dashed var(--conan-gold);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { border-color: rgba(212, 175, 55, 0.3); }
+            50% { border-color: var(--conan-gold); shadow: 0 0 10px var(--conan-gold); }
+            100% { border-color: rgba(212, 175, 55, 0.3); }
+        }
+        .mega-update-box h4 { margin: 0; color: var(--conan-gold); font-family: 'Montserrat', sans-serif; letter-spacing: 1px; }
+        .mega-update-box p { margin: 5px 0 0; font-size: 0.8rem; font-weight: 300; color: #eee; }
+
         #updateModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: #111; border: 2px solid var(--conan-gold); border-radius: 20px; padding: 25px; max-width: 400px; width: 85%; text-align: center; }
         .update-list { text-align: left; font-size: 0.8rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin: 15px 0; line-height: 1.5; }
-        .container { width: 100%; max-width: 500px; padding: 20px 15px; text-align: center; }
-        .premium-card { background: var(--glass); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 24px; padding: 20px; backdrop-filter: blur(15px); }
+        .container { width: 100%; max-width: 500px; padding: 10px 15px; text-align: center; }
+        .premium-card { background: var(--glass); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 24px; padding: 20px; backdrop-filter: blur(15px); margin-top: 15px; }
         .result-container { margin: 10px 0; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .info-badge { display: inline-block; padding: 4px 12px; background: rgba(212, 175, 55, 0.1); border: 1px solid var(--conan-gold); border-radius: 50px; font-size: 0.8rem; color: var(--conan-gold); margin-bottom: 5px; opacity: 0; transition: 0.3s; }
         .info-badge.show { opacity: 1; }
@@ -37,7 +57,7 @@
         .ep-display span { color: var(--conan-gold); font-size: 1.1rem; display: block; margin-top: 5px; font-weight: 300; }
         .ep-display.show { opacity: 1; transform: translateY(0); }
         .btn-main { width: 100%; padding: 12px; font-size: 1rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; transition: 0.2s; margin-bottom: 8px; font-family: 'Kanit'; }
-        .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); color: #000; }
+        .btn-gold { background: var(--premium-grad); color: #000; }
         .btn-dark { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #444; }
         .history-card { margin-top: 20px; text-align: left; background: rgba(0,0,0,0.5); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
         .history-title { font-size: 0.85rem; color: var(--conan-gold); margin-bottom: 10px; display: flex; justify-content: space-between; }
@@ -55,10 +75,14 @@
 </head>
 <body>
 
-<!-- แถบแจ้งเตือนใหม่ -->
 <div class="alert-banner">
     <b>📢 ซีซั่น 25 ตอนที่ 12 อัปเดตเสาร์นี้ 21:00 น.!</b>
     <span>🎬 Movie 29 รอบสื่อ 17-20 เม.ย. | ฉายจริงทุกโรง 30 เม.ย. นี้</span>
+</div>
+
+<div class="mega-update-box">
+    <h4>🔥 MEGA UPDATE IS COMING</h4>
+    <p>เตรียมชมความอลังการเร็วๆ นี้! ฟีเจอร์ใหม่เพียบแบบจัดเต็ม</p>
 </div>
 
 <div id="updateModal">
@@ -210,3 +234,4 @@
 </script>
 </body>
 </html>
+
