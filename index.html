@@ -61,6 +61,13 @@
         .door-container.active .door-right { transform: translateX(-100%); }
         select { background: #111; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 8px; width: 100%; font-family: 'Kanit'; }
 
+        /* --- New: Episodes Inventory Style --- */
+        .inventory-card { margin-top: 15px; text-align: left; background: rgba(212, 175, 55, 0.05); border-radius: 15px; padding: 15px; border: 1px dashed var(--conan-gold); }
+        .inventory-title { font-size: 0.85rem; color: var(--conan-gold); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; }
+        .inventory-list { max-height: 200px; overflow-y: auto; font-size: 0.75rem; color: #bbb; }
+        .inv-category { margin-bottom: 10px; border-left: 2px solid var(--conan-gold); padding-left: 10px; }
+        .inv-item { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
         /* --- Chatbot Styles --- */
         #chatBtn { position: fixed; bottom: 20px; right: 20px; background: var(--conan-gold); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1001; }
         #chatWindow { position: fixed; bottom: 90px; right: 20px; width: 320px; height: 450px; background: #111; border: 1px solid var(--conan-gold); border-radius: 15px; display: none; flex-direction: column; overflow: hidden; z-index: 1001; box-shadow: 0 5px 25px rgba(0,0,0,0.8); }
@@ -120,7 +127,7 @@
         <div class="update-list">
             • <b>Strict Anti-Repeat:</b> ระบบสุ่มแบบใหม่ เช็คละเอียด ห้ามตอนซ้ำโผล่!<br>
             • <b>Advanced Chatbot:</b> น้องผู้ช่วยตอบเก่งขึ้น รู้ลึกเรื่องโคนัน<br>
-            • <b>UI Optimized:</b> ปรับปรุงความลื่นไหลสำหรับ คุณ โดยเฉพาะ
+            • <b>UI Optimized:</b> ปรับปรุงความลื่นไหลสำหรับ Ayu โดยเฉพาะ
         </div>
         <button class="btn-main btn-gold" onclick="closeModal()">เข้าสู่หน้าหลัก!</button>
     </div>
@@ -164,6 +171,12 @@
             <div class="history-title">ประวัติ (ห้ามสุ่มซ้ำ) <span onclick="clearAllHistory()" style="cursor:pointer; opacity:0.6;">[ล้างทั้งหมด]</span></div>
             <div id="historyList" class="history-list"></div>
         </div>
+
+        <div class="inventory-card">
+            <div class="inventory-title">📂 คลังรายชื่อคดีทั้งหมด</div>
+            <div id="inventoryList" class="inventory-list">
+                </div>
+        </div>
     </div>
 </div>
 
@@ -171,7 +184,7 @@
 <div id="chatWindow">
     <div class="chat-header">ผู้ช่วยนักสืบ (V3.5)</div>
     <div class="chat-body" id="chatBody">
-        <div class="msg bot">สวัสดีค่ะ เพื่อนๆ! มีคดีไหนให้ช่วยสืบบอกน้องได้เลยนะคะ!</div>
+        <div class="msg bot">สวัสดีค่ะ Ayu! มีคดีไหนให้ช่วยสืบบอกน้องได้เลยนะคะ!</div>
     </div>
     <div class="rich-menu-container">
         <div class="menu-tabs">
@@ -342,7 +355,35 @@
         if(!history.length) { l.innerHTML = '<div style="text-align:center; padding:10px; color:#555;">ไม่มีประวัติ</div>'; return; }
         l.innerHTML = history.map(h => `<div class="history-item ${h.checked ? 'checked' : ''}" onclick="toggleC(${h.id})"><span>${h.text}</span><div><span style="cursor:pointer;">${h.checked ? '✅' : '⭕'}</span><span class="btn-del" onclick="delI(${h.id}, event)">🗑️</span></div></div>`).join('');
     }
+
+    // --- [New: Render Inventory Function] ---
+    function renderInventory() {
+        const inv = document.getElementById('inventoryList');
+        let html = "";
+
+        // Movies
+        html += `<div class="inv-category"><strong>🎬 เดอะมูฟวี่ (1-28)</strong>`;
+        movieNames.forEach((m, i) => html += `<div class="inv-item">มูฟวี่ ${i+1}: ${m}</div>`);
+        html += `</div>`;
+
+        // Special Episodes
+        html += `<div class="inv-category"><strong>✨ ตอนพิเศษ</strong>`;
+        html += `<div class="inv-item">Lupin III vs Conan (2009)</div><div class="inv-item">Lupin III vs Conan (2013)</div>`;
+        html += `</div>`;
+
+        // Character Specific
+        const charNames = { black_org: "💀 องค์กรชุดดำ", kid: "🎩 จอมโจรคิด", ai: "🧪 ไฮบาระ", amuro: "☕ อามุโร่", akai: "🔫 อากาอิ", detective_boys: "🔍 แก๊งนักสืบ", shinichi: "⚽ ชินอิจิ", makoto: "🥋 มาโคโตะ" };
+        for (let key in charData) {
+            html += `<div class="inv-category"><strong>${charNames[key]}</strong>`;
+            charData[key].forEach(ep => html += `<div class="inv-item">${ep}</div>`);
+            html += `</div>`;
+        }
+
+        inv.innerHTML = html;
+    }
+
     save();
+    renderInventory();
 </script>
 </body>
 </html>
