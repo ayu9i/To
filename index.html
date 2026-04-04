@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Hub | Anti-Repeat V3.5 Fixed</title>
+    <title>Conan Hub | Anti-Repeat V3.5 Fixed & Expanded</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -61,10 +61,12 @@
         .door-container.active .door-right { transform: translateX(-100%); }
         select { background: #111; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 8px; width: 100%; font-family: 'Kanit'; }
 
-        /* --- New: Episodes Inventory Style --- */
+        /* --- Inventory Style --- */
         .inventory-card { margin-top: 15px; text-align: left; background: rgba(212, 175, 55, 0.05); border-radius: 15px; padding: 15px; border: 1px dashed var(--conan-gold); }
-        .inventory-title { font-size: 0.85rem; color: var(--conan-gold); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; }
-        .inventory-list { max-height: 200px; overflow-y: auto; font-size: 0.75rem; color: #bbb; }
+        .inventory-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .inventory-title { font-size: 0.85rem; color: var(--conan-gold); font-weight: 600; text-transform: uppercase; }
+        .inventory-list { max-height: 200px; overflow-y: auto; font-size: 0.75rem; color: #bbb; margin-top: 10px; display: none; }
+        .inventory-list.active { display: block; }
         .inv-category { margin-bottom: 10px; border-left: 2px solid var(--conan-gold); padding-left: 10px; }
         .inv-item { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
 
@@ -72,7 +74,7 @@
         #chatBtn { position: fixed; bottom: 20px; right: 20px; background: var(--conan-gold); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 1001; }
         #chatWindow { position: fixed; bottom: 90px; right: 20px; width: 320px; height: 450px; background: #111; border: 1px solid var(--conan-gold); border-radius: 15px; display: none; flex-direction: column; overflow: hidden; z-index: 1001; box-shadow: 0 5px 25px rgba(0,0,0,0.8); }
         .chat-header { background: var(--conan-gold); color: #000; padding: 12px; font-weight: 600; text-align: center; }
-        .chat-body { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; background: #0a0a0a; }
+        .chat-body { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; background: #0a0a0a; scroll-behavior: smooth; }
         .msg { padding: 8px 12px; border-radius: 12px; max-width: 80%; line-height: 1.4; }
         .bot { background: #222; align-self: flex-start; border: 1px solid #333; }
         .user { background: var(--conan-gold); color: #000; align-self: flex-end; }
@@ -80,7 +82,7 @@
         .menu-tabs { display: grid; grid-template-columns: 1fr 1fr; }
         .tab { padding: 10px; text-align: center; font-size: 0.9rem; font-weight: bold; cursor: pointer; color: white; background: #222; border-bottom: 2px solid transparent; }
         .tab.active { background: var(--conan-gold); color: black; }
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; background: #1a1a1a; }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; background: #1a1a1a; max-height: 150px; overflow-y: auto; }
         .menu-item { background: #333; padding: 8px 2px; border-radius: 5px; text-align: center; font-size: 0.7rem; cursor: pointer; transition: 0.2s; border: 1px solid #444; }
         .menu-item:hover { background: var(--conan-gold); color: black; }
 
@@ -126,8 +128,8 @@
         <h3>📢 อัปเดตล่าสุด V3.5 (Fixed)</h3>
         <div class="update-list">
             • <b>Strict Anti-Repeat:</b> ระบบสุ่มแบบใหม่ เช็คละเอียด ห้ามตอนซ้ำโผล่!<br>
-            • <b>Advanced Chatbot:</b> น้องผู้ช่วยตอบเก่งขึ้น รู้ลึกเรื่องโคนัน<br>
-            • <b>UI Optimized:</b> ปรับปรุงความลื่นไหลสำหรับ Ayu โดยเฉพาะ
+            • <b>Advanced Chatbot:</b> เพิ่มคำถามตอบโต้ 20+ รูปแบบ!<br>
+            • <b>Inventory Toggle:</b> สามารถย่อ/ขยายคลังรายชื่อคดีได้แล้ว
         </div>
         <button class="btn-main btn-gold" onclick="closeModal()">เข้าสู่หน้าหลัก!</button>
     </div>
@@ -173,9 +175,11 @@
         </div>
 
         <div class="inventory-card">
-            <div class="inventory-title">📂 คลังรายชื่อคดีทั้งหมด</div>
-            <div id="inventoryList" class="inventory-list">
-                </div>
+            <div class="inventory-header" onclick="toggleInventory()">
+                <div class="inventory-title">📂 คลังรายชื่อคดีทั้งหมด</div>
+                <div id="invArrow">▼</div>
+            </div>
+            <div id="inventoryList" class="inventory-list"></div>
         </div>
     </div>
 </div>
@@ -184,22 +188,34 @@
 <div id="chatWindow">
     <div class="chat-header">ผู้ช่วยนักสืบ (V3.5)</div>
     <div class="chat-body" id="chatBody">
-        <div class="msg bot">สวัสดีค่ะ Ayu! มีคดีไหนให้ช่วยสืบบอกน้องได้เลยนะคะ!</div>
+        <div class="msg bot">สวัสดีค่ะ Ayu! มีคดีไหนให้ช่วยสืบบอกน้องได้เลยนะคะ! มีข้อมูลใหม่ๆ มาเพียบเลย!</div>
     </div>
     <div class="rich-menu-container">
         <div class="menu-tabs">
-            <div class="tab active" id="tabMain" onclick="switchTab('main')">ระบบ</div>
-            <div class="tab" id="tabPromo" onclick="switchTab('promo')">ข้อมูล</div>
+            <div class="tab active" id="tabMain" onclick="switchTab('main')">ระบบ & ข้อมูล</div>
+            <div class="tab" id="tabPromo" onclick="switchTab('promo')">คำถามยอดฮิต</div>
         </div>
         <div id="gridMain" class="menu-grid">
             <div class="menu-item" onclick="botReply('สุ่มยังไง')">สุ่มยังไง</div>
             <div class="menu-item" onclick="botReply('ล้างประวัติ')">ล้างประวัติ</div>
             <div class="menu-item" onclick="botReply('ตอนแนะนำ')">ตอนแนะนำ</div>
-        </div>
-        <div id="gridPromo" class="menu-grid" style="display:none;">
             <div class="menu-item" onclick="botReply('มูฟวี่ล่าสุด')">มูฟวี่ล่าสุด</div>
             <div class="menu-item" onclick="botReply('ใครคือบอส')">ใครคือบอส</div>
             <div class="menu-item" onclick="botReply('ชินอิจิรัน')">ชินอิจิรัน</div>
+        </div>
+        <div id="gridPromo" class="menu-grid" style="display:none;">
+            <div class="menu-item" onclick="botReply('รันรู้ความจริงยัง')">รันรู้ความจริงยัง?</div>
+            <div class="menu-item" onclick="botReply('เซระคือใคร')">เซระคือใคร?</div>
+            <div class="menu-item" onclick="botReply('เบลม็อทใจดีไหม')">เบลม็อทใจดีไหม?</div>
+            <div class="menu-item" onclick="botReply('อากาอิขิตไหม')">อากาอิขิตไหม?</div>
+            <div class="menu-item" onclick="botReply('ไฮบาระชอบโคนัน?')">ไอจังชอบโคนัน?</div>
+            <div class="menu-item" onclick="botReply('ความหมายของคำว่าชินอิจิ')">ชื่อชินอิจิแปลว่า?</div>
+            <div class="menu-item" onclick="botReply('ดร.อากาสะคือบอส?')">ดร.คือบอส?</div>
+            <div class="menu-item" onclick="botReply('ทำไมโคนันไม่โต')">ทำไมไม่โตสักที?</div>
+            <div class="menu-item" onclick="botReply('เบอร์เบินคือใคร')">เบอร์เบินคือใคร?</div>
+            <div class="menu-item" onclick="botReply('ฮัตโตริสารภาพรักยัง')">ฮัตโตริสมหวังยัง?</div>
+            <div class="menu-item" onclick="botReply('รัมคือใคร')">เผยตัวจริง RUM</div>
+            <div class="menu-item" onclick="botReply('ยาแก้พิษชั่วคราว')">ยา APTX4869</div>
         </div>
     </div>
 </div>
@@ -235,6 +251,13 @@
         return history.some(item => item.text.replace(/<[^>]*>?/gm, '').trim() === cleanText);
     }
 
+    function toggleInventory() {
+        const inv = document.getElementById('inventoryList');
+        const arrow = document.getElementById('invArrow');
+        inv.classList.toggle('active');
+        arrow.innerText = inv.classList.contains('active') ? '▲' : '▼';
+    }
+
     function toggleUIPanel() { document.getElementById('uiPanel').classList.toggle('active'); }
     function toggleBotUI(show) { document.getElementById('chatBtn').style.display = show ? 'flex' : 'none'; if(!show) document.getElementById('chatWindow').style.display = 'none'; }
     function updateTheme(color) { document.documentElement.style.setProperty('--conan-gold', color); }
@@ -259,9 +282,21 @@
             'ตอนแนะนำ': "ลองดู 'คดีฆาตกรรมเปียโนโซนาต้าแสงจันทร์' หรือ 'ทัศนศึกษาสีแดง' ดูสิ สนุกและซึ้งมาก!",
             'มูฟวี่ล่าสุด': "ภาค 28 'ปริศนาภาพติดตามรณะ' ไงล่ะ! มีทั้งฮัตโตริและจอมโจรคิดเลยนะ!",
             'ใครคือบอส': "ความลับระดับองค์กรเลยนะเนี่ย! แต่ชื่อ 'คาราสุมะ เร็นยะ' พอจะคุ้นหูบ้างไหมคะ?",
-            'ชินอิจิรัน': "คู่นี้เค้าตกลงคบกันแล้วนะ Ayu หวานจนมดขึ้นจอที่วัดคิโยมิซึเลยล่ะ!"
+            'ชินอิจิรัน': "คู่นี้เค้าตกลงคบกันแล้วนะ Ayu หวานจนมดขึ้นจอที่วัดคิโยมิซึเลยล่ะ!",
+            'รันรู้ความจริงยัง': "รันเคยสงสัยหลายครั้งมาก! แต่โดนชินอิจิ (และคนรอบข้าง) แถจนเชื่อทุกที แต่ในมูฟวี่บางภาคนางแอบเซนส์แรงนะ!",
+            'เซระคือใคร': "น้องสาวของอากาอิ ชูอิจิค่ะ! เป็นนักสืบสาวที่มีทักษะจีทคุนโด้เก่งมากๆ",
+            'เบลม็อทใจดีไหม': "นางเป็น 'A Secret Makes A Woman Woman' ค่ะ แม้จะเป็นคนในองค์กรแต่ก็คอยปกป้องโคนันกับรันเสมอในฐานะ Angel",
+            'อากาอิขิตไหม': "ยังไม่ตาย! เป็นแผนซ้อนแผนที่โรงพยาบาลไรริน ตอนนี้ปลอมตัวเป็น 'โอกิยะ สึบารุ' อาศัยบ้านชินอิจิอยู่จ้า",
+            'ไฮบาระชอบโคนัน?': "มีใจให้แน่นอนค่ะ! แต่ออกแนวแอบรักและซัพพอร์ตอยู่ห่างๆ เพราะรู้ว่าชินอิจิมีรันอยู่แล้ว เศร้าเนอะ Ayu",
+            'ความหมายของคำว่าชินอิจิ': "Shin (真) แปลว่าความจริง, Ichi (一) แปลว่าหนึ่ง รวมกันคือ 'ความจริงมีเพียงหนึ่งเดียว' ไงคะ!",
+            'ดร.อากาสะคือบอส?': "นี่คือทฤษฎีสมคบคิดยุคแรกเลย! แต่อาจารย์โกโชยืนยันแล้วว่า 'ไม่ใช่' แน่นอน สบายใจได้!",
+            'ทำไมโคนันไม่โต': "ในเรื่องผ่านไปแค่ไม่กี่เดือนเองนะ (แม้เราจะดูมา 20 ปีแล้วก็ตาม) เวลาในโลกโคนันมันเดินช้ามากกกก",
+            'เบอร์เบินคือใคร': "คือ 'อามุโร่ โทโอรุ' หรือชื่อจริง 'ฟุรุยะ เรย์' เป็นตำรวจลับญี่ปุ่น (Public Security) ที่แฝงตัวเข้าไปค่ะ",
+            'ฮัตโตริสารภาพรักยัง': "พยายามมาหลายรอบมาก! ล่าสุดในมูฟวี่ 27 เกือบจะสำเร็จแล้วนะ ต้องไปลุ้นต่อในภาคล่าสุด!",
+            'รัมคือใคร': "อันดับ 2 ขององค์กรชุดดำ คือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบนั่นเอง!",
+            'ยาแก้พิษชั่วคราว': "ไอจังทำยาแก้พิษชั่วคราวได้ แต่ต้องระวังนะ เพราะถ้ากินบ่อยร่างกายจะสร้างภูมิคุ้มกันทำให้ฤทธิ์ยาอยู่น้อยลง"
         };
-        reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ?";
+        reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ หรือลองกดดูคำถามที่แท็บ 'คำถามยอดฮิต' นะ!";
         setTimeout(() => { body.innerHTML += `<div class="msg bot">${reply}</div>`; body.scrollTop = body.scrollHeight; }, 400);
     }
 
@@ -356,29 +391,21 @@
         l.innerHTML = history.map(h => `<div class="history-item ${h.checked ? 'checked' : ''}" onclick="toggleC(${h.id})"><span>${h.text}</span><div><span style="cursor:pointer;">${h.checked ? '✅' : '⭕'}</span><span class="btn-del" onclick="delI(${h.id}, event)">🗑️</span></div></div>`).join('');
     }
 
-    // --- [New: Render Inventory Function] ---
     function renderInventory() {
         const inv = document.getElementById('inventoryList');
         let html = "";
-
-        // Movies
         html += `<div class="inv-category"><strong>🎬 เดอะมูฟวี่ (1-28)</strong>`;
         movieNames.forEach((m, i) => html += `<div class="inv-item">มูฟวี่ ${i+1}: ${m}</div>`);
         html += `</div>`;
-
-        // Special Episodes
         html += `<div class="inv-category"><strong>✨ ตอนพิเศษ</strong>`;
         html += `<div class="inv-item">Lupin III vs Conan (2009)</div><div class="inv-item">Lupin III vs Conan (2013)</div>`;
         html += `</div>`;
-
-        // Character Specific
         const charNames = { black_org: "💀 องค์กรชุดดำ", kid: "🎩 จอมโจรคิด", ai: "🧪 ไฮบาระ", amuro: "☕ อามุโร่", akai: "🔫 อากาอิ", detective_boys: "🔍 แก๊งนักสืบ", shinichi: "⚽ ชินอิจิ", makoto: "🥋 มาโคโตะ" };
         for (let key in charData) {
             html += `<div class="inv-category"><strong>${charNames[key]}</strong>`;
             charData[key].forEach(ep => html += `<div class="inv-item">${ep}</div>`);
             html += `</div>`;
         }
-
         inv.innerHTML = html;
     }
 
@@ -387,3 +414,4 @@
 </script>
 </body>
 </html>
+
