@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Hub | Anti-Repeat V3.6.1 Live Update</title>
+    <title>Conan Hub | Anti-Repeat V3.6 Fixed All</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -86,6 +86,7 @@
         .menu-item { background: #333; padding: 8px 2px; border-radius: 5px; text-align: center; font-size: 0.7rem; cursor: pointer; transition: 0.2s; border: 1px solid #444; }
         .menu-item:hover { background: var(--conan-gold); color: black; }
 
+        /* Switch UI */
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 34px; }
@@ -124,11 +125,11 @@
 
 <div id="updateModal">
     <div class="modal-content">
-        <h3>📢 อัปเดต V3.6.1 (Live S25)</h3>
+        <h3>📢 อัปเดตล่าสุด V3.6 (Fixed)</h3>
         <div class="update-list">
-            • <b>New Season 25:</b> รองรับตอนที่ 13-52 เรียบร้อยแล้ว!<br>
-            • <b>Live Saturdays:</b> ตอนใหม่จะถูกปลดล็อกเข้าสู่ระบบสุ่มทุกวันเสาร์อัตโนมัติ<br>
-            • <b>Inventory Fix:</b> แสดงสถานะการฉายในคลังรายชื่อ
+            • <b>Expanded Data:</b> เพิ่มตอนสำคัญตามตัวละครมากขึ้นกว่าเท่าตัว!<br>
+            • <b>Lupin Fix:</b> แก้ไขปุ่มสุ่มปะทะลูแปงให้ทำงานถูกต้อง<br>
+            • <b>Anti-Repeat:</b> ระบบป้องกันการสุ่มซ้ำทำงาน 100%
         </div>
         <button class="btn-main btn-gold" onclick="closeModal()">เข้าสู่หน้าหลัก!</button>
     </div>
@@ -185,9 +186,9 @@
 
 <div id="chatBtn" onclick="toggleChat()">🔍</div>
 <div id="chatWindow">
-    <div class="chat-header">ผู้ช่วยนักสืบ (V3.6.1)</div>
+    <div class="chat-header">ผู้ช่วยนักสืบ (V3.6)</div>
     <div class="chat-body" id="chatBody">
-        <div class="msg bot">สวัสดีค่ะ Ayu! ระบบพร้อมอัปเดตตอนใหม่ทุกวันเสาร์แล้วนะ!</div>
+        <div class="msg bot">สวัสดีค่ะ Ayu! อัปเดตรายชื่อตอนให้เพียบเลยนะ!</div>
     </div>
     <div class="rich-menu-container">
         <div class="menu-tabs">
@@ -205,9 +206,17 @@
         <div id="gridPromo" class="menu-grid" style="display:none;">
             <div class="menu-item" onclick="botReply('รันรู้ความจริงยัง')">รันรู้ความจริงยัง?</div>
             <div class="menu-item" onclick="botReply('เซระคือใคร')">เซระคือใคร?</div>
+            <div class="menu-item" onclick="botReply('เบลม็อทใจดีไหม')">เบลม็อทใจดีไหม?</div>
+            <div class="menu-item" onclick="botReply('อากาอิขิตไหม')">อากาอิขิตไหม?</div>
             <div class="menu-item" onclick="botReply('ไฮบาระชอบโคนัน?')">ไอจังชอบโคนัน?</div>
+            <div class="menu-item" onclick="botReply('ความหมายของคำว่าชินอิจิ')">ชื่อชินอิจิแปลว่า?</div>
+            <div class="menu-item" onclick="botReply('ดร.อากาสะคือบอส?')">ดร.คือบอส?</div>
             <div class="menu-item" onclick="botReply('ทำไมโคนันไม่โต')">ทำไมไม่โตสักที?</div>
+            <div class="menu-item" onclick="botReply('เบอร์เบินคือใคร')">เบอร์เบินคือใคร?</div>
+            <div class="menu-item" onclick="botReply('ฮัตโตริสารภาพรักยัง')">ฮัตโตริสมหวังยัง?</div>
             <div class="menu-item" onclick="botReply('รัมคือใคร')">เผยตัวจริง RUM</div>
+            <div class="menu-item" onclick="botReply('ยาแก้พิษชั่วคราว')">ยา APTX4869</div>
+            <div class="menu-item" onclick="botReply('ฟุรุยะเรย์อายุ')">อามุโร่อายุเท่าไหร่?</div>
             <div class="menu-item" onclick="botReply('โคนันจบเมื่อไหร่')">เมื่อไหร่จะจบ?</div>
         </div>
     </div>
@@ -226,39 +235,65 @@
     ];
 
     const charData = { 
-        black_org: ["ซีซั่น 1 ตอนที่ 1 (จุดเริ่มต้น)", "ซีซั่น 15 ตอนที่ 753-756 (รถด่วนทมิฬ)", "ซีซั่น 21 ตอนที่ 1131 (จุดเริ่มต้นของรัม)"],
-        kid: ["ซีซั่น 2 ตอนที่ 78-79 (โคนันปะทะจอมโจรคิด)", "ซีซั่น 16 ตอนที่ 776-777 (จอมโจรคิดปะทะเคียวโกกุ)"],
-        ai: ["ซีซั่น 3 ตอนที่ 136 (ผู้หญิงที่มาจากองค์กร)", "ซีซั่น 19 ตอนที่ 979 (ปริศนาการหายตัวไปของไฮบาระ)"],
-        amuro: ["ซีซั่น 15 ตอนที่ 719-720 (พิธีวิวาห์ที่เสี่ยงอันตราย)", "ซีซั่น 21 ตอนที่ 1110 (อามุโร่ ปะทะ รัม)"],
-        akai: ["ซีซั่น 11 ตอนที่ 459-463 (ดำปะทะแดงเดือด)", "ซีซั่น 20 ตอนที่ 1014 (เป้าหมายคือสีแดงทมิฬ)"],
-        detective_boys: ["ซีซั่น 1 ตอนที่ 4 (รหัสลับบนแผนที่ขุมทรัพย์)", "ซีซั่น 19 ตอนที่ 951 (โคมไฟสีแดง)"],
-        shinichi: ["ซีซั่น 1 ตอนที่ 1 (รถไฟเหาะ)", "ซีซั่น 20 ตอนที่ 982-985 (ทัศนศึกษาสีแดง)"],
-        makoto: ["ซีซั่น 4 ตอนที่ 163-164 (มาโคโตะ ปรากฏตัว)", "ซีซั่น 19 ตอนที่ 962 (หมัดที่แข็งแกร่งที่สุด)"]
+        black_org: [
+            "ซีซั่น 1 ตอนที่ 1 (จุดเริ่มต้น)", "ซีซั่น 2 ตอนที่ 56 (คดีฆาตกรรมบริษัทเกม)", "ซีซั่น 3 ตอนที่ 136 (ผู้หญิงที่มาจากองค์กรชุดดำ)",
+            "ซีซั่น 4 ตอนที่ 181-182 (การเผชิญหน้าอีกครั้ง)", "ซีซั่น 5 ตอนที่ 190-192 (การกลับมาที่เสี่ยงตาย)", "ซีซั่น 6 ตอนที่ 249-250 (ความลึกลับที่ปิดตาย)",
+            "ซีซั่น 8 ตอนที่ 334-336 (ติดต่อกับองค์กรชุดดำ)", "ซีซั่น 9 ตอนที่ 371-375 (ปะทะองค์กรชุดดำ)", "ซีซั่น 11 ตอนที่ 459-463 (ดำปะทะแดงเดือด)",
+            "ซีซั่น 15 ตอนที่ 753-756 (รถด่วนทมิฬ)", "ซีซั่น 17 ตอนที่ 832-836 (ความจริงของสีแดง)", "ซีซั่น 20 ตอนที่ 1011-1014 (เป้าหมายคือกรมตำรวจ)",
+            "ซีซั่น 21 ตอนที่ 1131 (จุดเริ่มต้นของรัม)"
+        ],
+        kid: [
+            "ซีซั่น 2 ตอนที่ 78-79 (โคนันปะทะจอมโจรคิด)", "ซีซั่น 3 ตอนที่ 142-144 (จอมโจรคิดกับพจนานุกรมภาพ)", "ซีซั่น 5 ตอนที่ 235-238 (รวมพลนักสืบ)",
+            "ซีซั่น 8 ตอนที่ 386-387 (มหัศจรรย์กลางเวหาของจอมโจรคิด)", "ซีซั่น 10 ตอนที่ 512-513 (จอมโจรคิดกับสี่ภาพเขียนชื่อดัง)",
+            "ซีซั่น 12 ตอนที่ 562-563 (จอมโจรคิดปะทะตู้เซฟที่แข็งแกร่งที่สุด)", "ซีซั่น 14 ตอนที่ 678 (จอมโจรคิดกับคราบที่เปื้อนบนอัญมณี)",
+            "ซีซั่น 16 ตอนที่ 776-777 (จอมโจรคิดปะทะเคียวโกกุ มาโคโตะ)"
+        ],
+        ai: [
+            "ซีซั่น 3 ตอนที่ 136 (ผู้หญิงที่มาจากองค์กรชุดดำ)", "ซีซั่น 4 ตอนที่ 148 (วิกฤติของไฮบาระ ไอ)", "ซีซั่น 4 ตอนที่ 166-167 (ความลับของห้องทดลอง)",
+            "ซีซั่น 6 ตอนที่ 265 (คดีที่มุ่งร้ายต่อไฮบาระ)", "ซีซั่น 7 ตอนที่ 311 (ขบวนพาเหรดของความแค้น)", "ซีซั่น 13 ตอนที่ 648 (ความลับของไอจัง)",
+            "ซีซั่น 18 ตอนที่ 899 (ไฮบาระ ไอ กับแก๊งนักสืบเยาวชน)", "ซีซั่น 19 ตอนที่ 979 (ปริศนาการหายตัวไปของไฮบาระ)"
+        ],
+        amuro: [
+            "ซีซั่น 15 ตอนที่ 719-720 (พิธีวิวาห์ที่เสี่ยงอันตราย)", "ซีซั่น 15 ตอนที่ 733 (อามุโร่ที่ถูกล้อมกรอบ)", "ซีซั่น 16 ตอนที่ 751 (เงาที่ย่องเข้าหาความลับ)",
+            "ซีซั่น 17 ตอนที่ 823-827 (เบอร์เบินที่เคลื่อนไหว)", "ซีซั่น 18 ตอนที่ 936 (ความลับของอามุโร่และโคนัน)", "ซีซั่น 20 ตอนที่ 1011 (ความลับของห้องแล็บ)",
+            "ซีซั่น 21 ตอนที่ 1110 (อามุโร่ ปะทะ รัม)"
+        ],
+        akai: [
+            "ซีซั่น 6 ตอนที่ 249 (ชายที่มาจากองค์กรชุดดำ)", "ซีซั่น 7 ตอนที่ 309-310 (รอยยิ้มที่น่ากลัวของอากาอิ)", "ซีซั่น 11 ตอนที่ 459-463 (ดำปะทะแดงเดือด)",
+            "ซีซั่น 12 ตอนที่ 538-539 (การไขคดีของสึบารุ)", "ซีซั่น 17 ตอนที่ 832-836 (ความจริงของสีแดง)", "ซีซั่น 18 ตอนที่ 937 (ความทรงจำของอากาอิ)",
+            "ซีซั่น 20 ตอนที่ 1014 (เป้าหมายคือสีแดงทมิฬ)"
+        ],
+        detective_boys: [
+            "ซีซั่น 1 ตอนที่ 4 (รหัสลับบนแผนที่ขุมทรัพย์)", "ซีซั่น 1 ตอนที่ 13 (คดีฆาตกรรมศพเดินได้)", "ซีซั่น 3 ตอนที่ 115 (คดีฆาตกรรมแก๊งนักสืบ)",
+            "ซีซั่น 5 ตอนที่ 203 (เห็ดกับแก๊งนักสืบเยาวชน)", "ซีซั่น 10 ตอนที่ 499 (แก๊งนักสืบเยาวชนปะทะแมลง)", "ซีซั่น 14 ตอนที่ 681 (ศึกสายเลือดระหว่างนักสืบ)",
+            "ซีซั่น 19 ตอนที่ 951 (แก๊งนักสืบเยาวชนกับโคมไฟสีแดง)"
+        ],
+        shinichi: [
+            "ซีซั่น 1 ตอนที่ 1 (คดีฆาตกรรมบนรถไฟเหาะ)", "ซีซั่น 4 ตอนที่ 173-175 (การฟื้นคืนชีพที่เดิมพันด้วยชีวิต)", "ซีซั่น 6 ตอนที่ 235 (คุโด้ ชินอิจิ ปะทะ จอมโจรคิด)",
+            "ซีซั่น 11 ตอนที่ 514 (คุโด้ ชินอิจิ กับคดีที่นิวยอร์ก)", "ซีซั่น 13 ตอนที่ 667-672 (คัมภีร์ของโฮล์มส์)", "ซีซั่น 20 ตอนที่ 982-985 (ทัศนศึกษาสีแดง)"
+        ],
+        makoto: [
+            "ซีซั่น 4 ตอนที่ 163-164 (เคียวโกกุ มาโคโตะ ปรากฏตัว)", "ซีซั่น 6 ตอนที่ 289 (หน้าร้อนที่อันตรายของโซโนโกะ)", "ซีซั่น 10 ตอนที่ 504 (มาโคโตะปะทะคาราเต้)",
+            "ซีซั่น 16 ตอนที่ 797-798 (ความแค้นของมาโคโตะ)", "ซีซั่น 19 ตอนที่ 962 (หมัดที่แข็งแกร่งที่สุดในโลก)"
+        ]
     };
 
     let history = JSON.parse(localStorage.getItem('conan_norepeat_v3')) || [];
 
-    // --- [Core Logic] ---
-    function getAvailableMaxEpS25() {
-        const today = new Date();
-        const launchDate = new Date('2026-04-11'); // ตอนที่ 13 ออกอากาศ
-        if (today < launchDate) return 12; // ถ้ายังไม่ถึงเสาร์ที่ 11 เม.ย. ให้สุดที่ตอน 12
-        
-        // คำนวณจำนวนสัปดาห์ที่ผ่านไปจากวันที่ 11 เม.ย.
-        const diffWeeks = Math.floor((today - launchDate) / (7 * 24 * 60 * 60 * 1000));
-        let max = 13 + diffWeeks;
-        return max > 52 ? 52 : max;
-    }
-
+    // --- [Logic Sections] ---
     function isDuplicate(text) {
         const cleanTarget = text.replace(/<[^>]*>?/gm, '').trim();
-        return history.some(item => item.text.replace(/<[^>]*>?/gm, '').trim() === cleanTarget);
+        return history.some(item => {
+            const cleanHistoryItem = item.text.replace(/<[^>]*>?/gm, '').trim();
+            return cleanHistoryItem === cleanTarget;
+        });
     }
 
     function toggleInventory() {
         const inv = document.getElementById('inventoryList');
+        const arrow = document.getElementById('invArrow');
         inv.classList.toggle('active');
-        document.getElementById('invArrow').innerText = inv.classList.contains('active') ? '▲' : '▼';
+        arrow.innerText = inv.classList.contains('active') ? '▲' : '▼';
     }
 
     function toggleUIPanel() { document.getElementById('uiPanel').classList.toggle('active'); }
@@ -278,15 +313,30 @@
     function botReply(cmd) {
         const body = document.getElementById('chatBody');
         body.innerHTML += `<div class="msg user">${cmd}</div>`;
+        let reply = "";
         const responses = {
-            'สุ่มยังไง': "เลือกปุ่มที่ต้องการ ระบบจะข้ามตอนที่เคยดูไปแล้วให้อัตโนมัติเลยนะ Ayu!",
-            'ล้างประวัติ': "กด [ล้างทั้งหมด] ในส่วนประวัติได้เลยจ้า",
-            'ตอนแนะนำ': "ลองดู 'ทัศนศึกษาสีแดง' หรือ 'รถด่วนทมิฬ' ดูนะ สนุกมาก!",
-            'มูฟวี่ล่าสุด': "ภาค 28 ไงล่ะ! มีจอมโจรคิดกับฮัตโตริด้วยนะ",
-            'ใครคือบอส': "บอสคือ 'คาราสุมะ เร็นยะ' เศรษฐีลึกลับแห่งญี่ปุ่นค่ะ",
-            'ชินอิจิรัน': "เค้าเป็นแฟนกันแล้วนะ หวานสุดๆ ที่วัดคิโยมิซึ!"
+            'สุ่มยังไง': "เลือกหมวดที่ชอบแล้วกดปุ่ม ระบบจะเช็คประวัติข้างล่าง ถ้าอันไหนสุ่มไปแล้วมันจะข้ามไปหาตอนใหม่ให้ทันทีแบบ Auto เลยนะ Ayu!",
+            'ล้างประวัติ': "ถ้าอยากลืมทุกคดีที่สืบไปแล้ว กด [ล้างทั้งหมด] ตรงแถบประวัติได้เลยจ้า ความทรงจำจะหายวับทันที!",
+            'ตอนแนะนำ': "ลองดู 'คดีฆาตกรรมเปียโนโซนาต้าแสงจันทร์' หรือ 'ทัศนศึกษาสีแดง' ดูสิ สนุกและซึ้งมาก!",
+            'มูฟวี่ล่าสุด': "ภาค 28 'ปริศนาภาพติดตามรณะ' ไงล่ะ! มีทั้งฮัตโตริและจอมโจรคิดเลยนะ!",
+            'ใครคือบอส': "ความลับระดับองค์กรเลยนะเนี่ย! แต่ชื่อ 'คาราสุมะ เร็นยะ' พอจะคุ้นหูบ้างไหมคะ?",
+            'ชินอิจิรัน': "คู่นี้เค้าตกลงคบกันแล้วนะ Ayu หวานจนมดขึ้นจอที่วัดคิโยมิซึเลยล่ะ!",
+            'รันรู้ความจริงยัง': "รันเคยสงสัยหลายครั้งมาก! แต่โดนชินอิจิแถจนเชื่อทุกที แต่เซนส์ของรันน่ะน่ากลัวที่สุดแล้วนะ!",
+            'เซระคือใคร': "น้องสาวของอากาอิ ชูอิจิค่ะ! เป็นนักสืบสาวที่มีทักษะจีทคุนโด้เก่งมากๆ",
+            'เบลม็อทใจดีไหม': "นางเป็นคนลึกลับค่ะ แม้จะเป็นคนในองค์กรแต่ก็คอยปกป้องโคนันกับรันเสมอในฐานะ Angel",
+            'อากาอิขิตไหม': "ยังไม่ตาย! ตอนนี้ปลอมตัวเป็น 'โอกิยะ สึบารุ' อาศัยบ้านชินอิจิอยู่จ้า",
+            'ไฮบาระชอบโคนัน?': "มีใจให้แน่นอนค่ะ! แต่ออกแนวซัพพอร์ตอยู่ห่างๆ เศร้าเนอะ Ayu",
+            'ความหมายของคำว่าชินอิจิ': "Shin (真) แปลว่าความจริง, Ichi (一) แปลว่าหนึ่ง รวมกันคือ 'ความจริงมีเพียงหนึ่งเดียว'!",
+            'ดร.อากาสะคือบอส?': "อาจารย์โกโชยืนยันแล้วว่า 'ไม่ใช่' แน่นอน สบายใจได้!",
+            'ทำไมโคนันไม่โต': "ในเรื่องผ่านไปแค่ไม่กี่เดือนเองนะ (แม้คนดูจะแก่แล้วก็ตาม 555)",
+            'เบอร์เบินคือใคร': "คือ 'อามุโร่ โทโอรุ' หรือ 'ฟุรุยะ เรย์' ตำรวจลับญี่ปุ่นนั่นเอง!",
+            'ฮัตโตริสารภาพรักยัง': "พยายามมาหลายรอบมาก! ล่าสุดในมูฟวี่ 27 เกือบจะสำเร็จแล้ว ลุ้นกันต่อไป!",
+            'รัมคือใคร': "อันดับ 2 ขององค์กรคือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบจ้า!",
+            'ยาแก้พิษชั่วคราว': "ไอจังทำยาแก้พิษชั่วคราวได้ แต่ฤทธิ์จะสั้นลงเรื่อยๆ ถ้ากินบ่อยเกินไปนะ",
+            'ฟุรุยะเรย์อายุ': "อามุโร่ อายุ 29 ปีค่ะ เป็นชายที่ทำงาน 3 หน้าที่ได้แบบเทพสุดๆ",
+            'โคนันจบเมื่อไหร่': "ยังไม่มีกำหนดจบค่ะ แต่อาจารย์โกโชบอกว่าร่างโครงตอนจบไว้เรียบร้อยแล้ว!"
         };
-        const reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูนะ Ayu!";
+        reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ หรือลองกดดูที่ 'คำถามยอดฮิต' นะ!";
         setTimeout(() => { body.innerHTML += `<div class="msg bot">${reply}</div>`; body.scrollTop = body.scrollHeight; }, 400);
     }
 
@@ -301,23 +351,22 @@
         startSpin(() => {
             let res = "", badge = "", retryCount = 0;
             while (retryCount < 500) {
-                if (Math.random() < 0.6) {
+                if (Math.random() < 0.7) {
                     const ep = Math.floor(Math.random() * 1100) + 1;
                     const s = Math.ceil(ep / 52);
                     res = `ซีซั่น ${s > 22 ? 22 : s} ตอนที่ ${ep}`;
                     badge = "iQIYI / TrueID";
                 } else {
                     const s = Math.floor(Math.random() * (25 - 20 + 1)) + 20;
-                    let maxEp = 52; 
-                    if(s === 25) maxEp = getAvailableMaxEpS25();
+                    let maxEp = 52; if(s === 25) maxEp = 12;
                     const ep = Math.floor(Math.random() * maxEp) + 1;
                     res = `ซีซั่น ${s} ตอนที่ ${ep}`;
-                    badge = "TrueVisions / ล่าสุด";
+                    badge = "TrueVisions";
                 }
                 if (!isDuplicate(res)) break;
                 retryCount++;
             }
-            if (retryCount >= 500) { alert("ดูจนหมดคลังแล้ว Ayu!"); return; }
+            if (retryCount >= 500) { alert("ดูจนหมดคลังแล้วเหรอ Ayu! ลองล้างประวัติเพื่อเริ่มใหม่นะ"); return; }
             updateUI(res, badge); addH(res);
         });
     }
@@ -335,15 +384,28 @@
         });
     }
 
+    function spinEverything() {
+        const r = Math.random();
+        if (r < 0.6) spinSeries();
+        else if (r < 0.85) spinMovie();
+        else spinLupin();
+    }
+
     function spinLupin() {
         startSpin(() => {
-            const lupinList = ["Lupin III vs Conan (TV Special)", "Lupin III vs Conan (The Movie)"];
+            const lupinList = ["Lupin III vs Conan (TV Special 2009)", "Lupin III vs Conan (The Movie 2013)"];
             let res, retry = 0;
             do {
                 res = lupinList[Math.floor(Math.random() * lupinList.length)];
                 retry++;
             } while (isDuplicate(res) && retry < 10);
-            updateUI(res, "ตอนพิเศษ"); addH(res);
+            
+            if (retry >= 10 && isDuplicate(res)) {
+                alert("ดูการปะทะลูแปงจนครบแล้วจ้า Ayu!");
+                return;
+            }
+            updateUI(res, "ตอนพิเศษ"); 
+            addH(res);
         });
     }
 
@@ -352,11 +414,27 @@
             const c = document.getElementById('charSelect').value;
             const pool = charData[c];
             let rawRes, retry = 0;
+            
             do {
                 rawRes = pool[Math.floor(Math.random() * pool.length)];
                 retry++;
             } while (isDuplicate(rawRes) && retry < 100);
-            updateUI(rawRes, `ตัวละคร: ${c}`); addH(rawRes);
+
+            if (retry >= 100) {
+                alert("สุ่มจนครบโควตาตัวละครนี้แล้วนะ Ayu!");
+                return;
+            }
+
+            const charNames = { black_org: "องค์กรชุดดำ", kid: "จอมโจรคิด", ai: "ไฮบาระ", amuro: "อามุโร่", akai: "อากาอิ", detective_boys: "แก๊งนักสืบเยาวชน", shinichi: "ชินอิจิ", makoto: "มาโคโตะ" };
+            
+            let displayRes = rawRes;
+            if(rawRes.includes('(')) {
+                const parts = rawRes.split(' (');
+                displayRes = `${parts[0]} <span>(${parts[1]}</span>`;
+            }
+            
+            updateUI(displayRes, `ตัวละคร: ${charNames[c]}`); 
+            addH(rawRes);
         });
     }
 
@@ -381,15 +459,19 @@
 
     function renderInventory() {
         const inv = document.getElementById('inventoryList');
-        const maxS25 = getAvailableMaxEpS25();
-        let html = `<div class="inv-category"><strong>🎬 เดอะมูฟวี่ (1-28)</strong>`;
+        let html = "";
+        html += `<div class="inv-category"><strong>🎬 เดอะมูฟวี่ (1-28)</strong>`;
         movieNames.forEach((m, i) => html += `<div class="inv-item">มูฟวี่ ${i+1}: ${m}</div>`);
-        html += `</div><div class="inv-category"><strong>📺 ซีซั่น 25 (ล่าสุด)</strong>`;
-        for(let i=1; i<=52; i++){
-            const available = i <= maxS25;
-            html += `<div class="inv-item" style="${available ? '' : 'opacity:0.4;'}">ตอนที่ ${i} ${available ? '✅' : '⏳ (รอเสาร์ถัดไป)'}</div>`;
-        }
         html += `</div>`;
+        html += `<div class="inv-category"><strong>✨ ตอนพิเศษ</strong>`;
+        html += `<div class="inv-item">Lupin III vs Conan (2009)</div><div class="inv-item">Lupin III vs Conan (2013)</div>`;
+        html += `</div>`;
+        const charNames = { black_org: "💀 องค์กรชุดดำ", kid: "🎩 จอมโจรคิด", ai: "🧪 ไฮบาระ", amuro: "☕ อามุโร่", akai: "🔫 อากาอิ", detective_boys: "🔍 แก๊งนักสืบ", shinichi: "⚽ ชินอิจิ", makoto: "🥋 มาโคโตะ" };
+        for (let key in charData) {
+            html += `<div class="inv-category"><strong>${charNames[key]}</strong>`;
+            charData[key].forEach(ep => html += `<div class="inv-item">${ep}</div>`);
+            html += `</div>`;
+        }
         inv.innerHTML = html;
     }
 
